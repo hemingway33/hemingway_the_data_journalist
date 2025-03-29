@@ -1,0 +1,11 @@
+I have a portfolio of loans to be selectively insured to maximize the portfolio-level expected risk-adjusted interest rate. The current loan-wise amounts, interest rates and expected default probabilities (PD) are already known. The original expected portfolio loss is sum of loan-level PD * EAD, where EAD stands for loan amount. The original expected portfolio revenue is sum of loan-level amount * interest rate. The target to be maximized ,i.e. the total expected profit,  is expected revenue minus expected loss. 
+
+Every loan selected to be insured may need to adjust down  (and only adjust down ) its interest rate to make sure that the  (loan amounts) weighted average of the insured loans’ interest rate is below 9%, but please make the average interest rate of insured loans as close to 9% as possible. Adjusted loan rates must be larger than 7%.
+
+Every loan to be select to be insured is charged 0.5% insurance fees, and is charged by at least down-adjust 0.5% interest rates. In expectation, the insured loan get benefits of decreased PD by 2.4%.
+
+For the consideration of customer experience and transaction cost, I expect a small number of adjusts and total adjustment, subject to maximization of portfolio-level goal. So, regularize the price adjustment terms to lesson as possible the number of adjustment incidents needed.
+
+You are an expert in Operational Research. Find me the solution to this problem (i.e. which loan is selected to be insured,  how to adjust the interest rate of these selected loan). Please use Python and its OR packages in preference.  If using PuLP package, note the issues with non-linear constraints (multiplying variables in PuLP).
+
+And then, compare with the case that all loans are set to be insured and optimize the price adjustments only.
