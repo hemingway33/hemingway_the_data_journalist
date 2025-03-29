@@ -180,3 +180,29 @@ cython_debug/
 *.csv
 *.xlsx  
 *.xls
+*.xls
+
+# image files
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.bmp
+*.tiff
+*.ico
+*.webp
+
+#pickle files
+*.pkl
+*.pickle
+*.pickle.gz
+*.pickle.bz2
+*.pickle.zip
+*.pickle.tar
+*.pickle.xz
+
+# gephi and networkx files  
+*.gexf
+*.gml
+*.graphml
+*.edgelist

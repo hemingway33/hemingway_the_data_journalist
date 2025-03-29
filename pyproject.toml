@@ -18,7 +18,10 @@ dependencies = [
     "beautifulsoup4",
     "openpyxl",
     "ipykernel",
-    "lxml"
+    "lxml",
+    "ruff",
+    "pulp>=3.1.1",
+    "askshare",
 ]
 
 [pip]
