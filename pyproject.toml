@@ -1,0 +1,29 @@
+[project]
+name = "hemingway-the-data-journalist"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "torch>=2.6.0",
+    "torchdata",
+    "statsmodels",
+    "scikit-learn",
+    "matplotlib",
+    "seaborn",
+    "plotly",
+    "pandas",
+    "spacy",
+    "transformers",
+    "beautifulsoup4",
+    "openpyxl",
+    "ipykernel",
+    "lxml"
+]
+
+[pip]
+index-url = "https://mirrors.tuna.tsinghua.edu.cn/pypi/web/simple"
+[tool.uv.pip]
+index-url = "https://mirrors.tuna.tsinghua.edu.cn/pypi/web/simple"
+[tool.uv]
+index-url = "https://mirrors.tuna.tsinghua.edu.cn/pypi/web/simple"
