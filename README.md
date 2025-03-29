@@ -1,2 +1,2 @@
 # hemingway_the_data_journalist
-Interesting and deep data stories
+Interesting and deep data stories shared for edutaining.
