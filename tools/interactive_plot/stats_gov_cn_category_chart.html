@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stats.gov.cn Article Categories - Donut Chart</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background-color: #f8f9fd;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            padding: 20px;
+        }
+        h1 {
+            color: #03363d;
+            font-weight: 500;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .chart-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+        .tooltip {
+            position: absolute;
+            background-color: rgba(255, 255, 255, 0.9);
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 10px;
+            pointer-events: none;
+            font-size: 14px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        .legend {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin: 5px 10px;
+        }
+        .legend-color {
+            width: 15px;
+            height: 15px;
+            margin-right: 8px;
+            border-radius: 3px;
+        }
+        .center-text {
+            text-anchor: middle;
+            font-weight: bold;
+            fill: #03363d;
+        }
+        text {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Stats.gov.cn Article Categories</h1>
+        <div class="chart-container" id="chart">
+            <div style="text-align: center; padding: 20px;">Loading chart data...</div>
+        </div>
+        <div class="legend" id="legend"></div>
+        <div id="debug" style="margin-top: 20px; color: #666; font-size: 12px;"></div>
+    </div>
+
+    <script>
+        // Add a debug function to help see what's happening
+        function logDebug(message) {
+            console.log(message);
+            const debugElem = document.getElementById('debug');
+            if (debugElem) {
+                debugElem.innerHTML += `<div>${message}</div>`;
+            }
+        }
+
+        async function createChart() {
+            logDebug("Starting chart creation...");
+            try {
+                // Try to load the data from file first
+                let data, articles;
+                
+                try {
+                    data = await d3.json('../../data/stats_gov_cn/stats_gov_cn_articles_20250329_144754.json');
+                    articles = data.articles;
+                    logDebug("Data loaded successfully from file");
+                } catch (loadError) {
+                    logDebug(`Could not load external data file: ${loadError.message}`);
+                    
+                    // Fallback data based on common categories
+                    articles = [
+                        {category: "Other"}, {category: "Other"}, {category: "Other"}, {category: "Other"}, {category: "Other"},
+                        {category: "Other"}, {category: "Other"}, {category: "Other"}, {category: "Other"}, {category: "Other"},
+                        {category: "GDP"}, {category: "GDP"}, {category: "GDP"}, {category: "GDP"}, {category: "GDP"},
+                        {category: "GDP"}, {category: "GDP"}, {category: "GDP"}, {category: "GDP"}, {category: "GDP"},
+                        {category: "Industrial Production"}, {category: "Industrial Production"}, {category: "Industrial Production"},
+                        {category: "Industrial Production"}, {category: "Industrial Production"}, {category: "Industrial Production"},
+                        {category: "CPI"}, {category: "CPI"}, {category: "CPI"}, {category: "CPI"}, {category: "CPI"},
+                        {category: "PPI"}, {category: "PPI"}, {category: "PPI"}, {category: "PPI"}, {category: "PPI"},
+                        {category: "Real Estate"}, {category: "Real Estate"}, {category: "Real Estate"}, {category: "Real Estate"},
+                        {category: "PMI"}, {category: "PMI"}, {category: "PMI"}, {category: "PMI"},
+                        {category: "Fixed Asset Investment"}, {category: "Fixed Asset Investment"}, {category: "Fixed Asset Investment"},
+                        {category: "Retail Sales"}, {category: "Retail Sales"}, {category: "Retail Sales"},
+                        {category: "Energy"}, {category: "Energy"}, {category: "Energy"},
+                        {category: "Regional Development"}, {category: "Regional Development"},
+                        {category: "Services"}, {category: "Services"},
+                        {category: "Agriculture"}, {category: "High-Tech"}, {category: "Statistical Report"}
+                    ];
+                }
+                
+                if (!articles) {
+                    throw new Error("No article data available");
+                }
+                
+                // Count categories
+                logDebug(`Processing ${articles.length} articles`);
+                const categoryCounts = {};
+                articles.forEach(article => {
+                    const category = article.category;
+                    if (!categoryCounts[category]) {
+                        categoryCounts[category] = 0;
+                    }
+                    categoryCounts[category]++;
+                });
+                
+                // Convert to array for D3
+                const categoryData = Object.entries(categoryCounts)
+                    .map(([category, count]) => ({ category, count }))
+                    .sort((a, b) => b.count - a.count);
+                
+                logDebug(`Found ${categoryData.length} unique categories`);
+                
+                // Define dimensions
+                const width = 600;
+                const height = 500;
+                const margin = 40;
+                const radius = Math.min(width, height) / 2 - margin;
+                
+                // Zendesk-inspired color palette
+                const colors = [
+                    "#03363d", // dark teal
+                    "#30aabc", // teal
+                    "#5cc8d6", // light teal
+                    "#2c5cc5", // blue
+                    "#6698ff", // light blue
+                    "#d8dcff", // pale blue
+                    "#37b8af", // turquoise
+                    "#49cec1", // light turquoise
+                    "#bdf3f0", // pale turquoise
+                    "#14a88e", // green
+                    "#17c995", // light green
+                    "#c9fff3"  // pale green
+                ];
+                
+                // Create color scale
+                const colorScale = d3.scaleOrdinal()
+                    .domain(categoryData.map(d => d.category))
+                    .range(colors);
+                
+                // Create SVG
+                logDebug("Creating SVG container");
+                const svg = d3.select("#chart").append("svg")
+                    .attr("width", width)
+                    .attr("height", height)
+                    .append("g")
+                    .attr("transform", `translate(${width / 2}, ${height / 2})`);
+                
+                // Create tooltip
+                const tooltip = d3.select("#chart")
+                    .append("div")
+                    .attr("class", "tooltip")
+                    .style("opacity", 0);
+                
+                // Create pie layout
+                const pie = d3.pie()
+                    .value(d => d.count)
+                    .sort(null);
+                
+                // Create arc generator for donut
+                const arc = d3.arc()
+                    .innerRadius(radius * 0.6) // For donut hole
+                    .outerRadius(radius);
+                
+                // Create arc generator for hover effect
+                const arcHover = d3.arc()
+                    .innerRadius(radius * 0.6)
+                    .outerRadius(radius * 1.05);
+                
+                // Draw donut chart
+                logDebug("Drawing chart segments");
+                const arcs = svg.selectAll("path")
+                    .data(pie(categoryData))
+                    .enter()
+                    .append("path")
+                    .attr("d", arc)
+                    .attr("fill", d => colorScale(d.data.category))
+                    .attr("stroke", "white")
+                    .attr("stroke-width", 2)
+                    .style("cursor", "pointer")
+                    .on("mouseover", function(event, d) {
+                        // Highlight segment
+                        d3.select(this)
+                            .transition()
+                            .duration(200)
+                            .attr("d", arcHover);
+                        
+                        // Show tooltip
+                        tooltip.transition()
+                            .duration(200)
+                            .style("opacity", 0.9);
+                        
+                        const percentage = (d.data.count / articles.length * 100).toFixed(1);
+                        
+                        tooltip.html(`<strong>${d.data.category}</strong><br>
+                                    Count: ${d.data.count}<br>
+                                    Percentage: ${percentage}%`)
+                            .style("left", (event.pageX + 10) + "px")
+                            .style("top", (event.pageY - 28) + "px");
+                    })
+                    .on("mouseout", function() {
+                        // Reset segment
+                        d3.select(this)
+                            .transition()
+                            .duration(200)
+                            .attr("d", arc);
+                        
+                        // Hide tooltip
+                        tooltip.transition()
+                            .duration(500)
+                            .style("opacity", 0);
+                    });
+                
+                // Add center text
+                svg.append("text")
+                    .attr("class", "center-text")
+                    .attr("dy", "0em")
+                    .text("Total Articles");
+                
+                svg.append("text")
+                    .attr("class", "center-text")
+                    .attr("dy", "1.2em")
+                    .text(articles.length);
+                
+                // Create legend
+                logDebug("Creating legend");
+                const legend = d3.select("#legend");
+                
+                categoryData.forEach(item => {
+                    const legendItem = legend.append("div")
+                        .attr("class", "legend-item");
+                    
+                    legendItem.append("div")
+                        .attr("class", "legend-color")
+                        .style("background-color", colorScale(item.category));
+                    
+                    legendItem.append("div")
+                        .text(`${item.category} (${item.count})`);
+                });
+            } catch (error) {
+                console.error("Chart creation failed:", error);
+                document.getElementById('chart').innerHTML = `<div style="color:red">Failed to create chart: ${error.message}</div>`;
+            }
+        }
+        
+        // Add event listener to ensure DOM is loaded
+        document.addEventListener('DOMContentLoaded', createChart);
+    </script>
+</body>
+</html>
