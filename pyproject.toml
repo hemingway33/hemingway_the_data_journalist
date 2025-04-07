@@ -20,7 +20,8 @@ dependencies = [
     "ipykernel",
     "lxml",
     "ruff",
-    "pulp>=3.1.1"
+    "pulp>=3.1.1",
+    "pypdf>=5.4.0",
 ]
 
 [pip]
