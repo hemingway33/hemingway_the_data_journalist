@@ -1,0 +1,9 @@
+langchain
+langgraph
+langchain_community
+ollama
+tavily-python
+yfinance
+pandas
+alpha_vantage
+# Add other necessary libraries here as we identify them (e.g., for web search, financial data) 
