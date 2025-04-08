@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stats.gov.cn Article Categories - Static Chart</title>
+    <style>
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background-color: #f8f9fd;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            padding: 20px;
+        }
+        h1 {
+            color: #03363d;
+            font-weight: 500;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .chart-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+        .legend {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin: 8px 12px;
+        }
+        .legend-color {
+            width: 15px;
+            height: 15px;
+            margin-right: 8px;
+            border-radius: 3px;
+        }
+        text {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Stats.gov.cn Article Categories (Static)</h1>
+        <div class="chart-container">
+            <!-- Static SVG Donut Chart -->
+            <svg width="600" height="500">
+                <g transform="translate(300, 250)">
+                    <!-- Donut segments with Zendesk-like colors -->
+                    <!-- Other - 25% -->
+                    <path d="M0,-180A180,180,0,0,1,180,0L108,0A108,108,0,0,0,0,-108Z" fill="#03363d" stroke="white" stroke-width="2"></path>
+                    
+                    <!-- GDP - 18% -->
+                    <path d="M180,0A180,180,0,0,1,55.8,171.6L33.5,103A108,108,0,0,0,108,0Z" fill="#30aabc" stroke="white" stroke-width="2"></path>
+                    
+                    <!-- Industrial Production - 15% -->
+                    <path d="M55.8,171.6A180,180,0,0,1,-95.8,153.0L-57.5,91.8A108,108,0,0,0,33.5,103Z" fill="#5cc8d6" stroke="white" stroke-width="2"></path>
+                    
+                    <!-- CPI - 10% -->
+                    <path d="M-95.8,153.0A180,180,0,0,1,-174.0,47.0L-104.4,28.2A108,108,0,0,0,-57.5,91.8Z" fill="#2c5cc5" stroke="white" stroke-width="2"></path>
+                    
+                    <!-- PPI - 8% -->
+                    <path d="M-174.0,47.0A180,180,0,0,1,-156.2,-90.2L-93.7,-54.1A108,108,0,0,0,-104.4,28.2Z" fill="#6698ff" stroke="white" stroke-width="2"></path>
+                    
+                    <!-- Real Estate - 7% -->
+                    <path d="M-156.2,-90.2A180,180,0,0,1,-90.2,-156.2L-54.1,-93.7A108,108,0,0,0,-93.7,-54.1Z" fill="#d8dcff" stroke="white" stroke-width="2"></path>
+                    
+                    <!-- PMI - 5% -->
+                    <path d="M-90.2,-156.2A180,180,0,0,1,-0.0,-180.0L-0.0,-108.0A108,108,0,0,0,-54.1,-93.7Z" fill="#37b8af" stroke="white" stroke-width="2"></path>
+                    
+                    <!-- Fixed Asset Investment - 4% -->
+                    <path d="M-0.0,-180.0A180,180,0,0,1,62.6,-169.4L37.6,-101.6A108,108,0,0,0,-0.0,-108.0Z" fill="#49cec1" stroke="white" stroke-width="2"></path>
+                    
+                    <!-- Retail Sales - 3% -->
+                    <path d="M62.6,-169.4A180,180,0,0,1,116.0,-137.4L69.6,-82.4A108,108,0,0,0,37.6,-101.6Z" fill="#bdf3f0" stroke="white" stroke-width="2"></path>
+                    
+                    <!-- Other categories - 5% -->
+                    <path d="M116.0,-137.4A180,180,0,0,1,169.3,-62.0L101.6,-37.2A108,108,0,0,0,69.6,-82.4Z" fill="#14a88e" stroke="white" stroke-width="2"></path>
+                    
+                    <!-- Center text -->
+                    <text text-anchor="middle" font-weight="bold" fill="#03363d" dy="-10">Total Articles</text>
+                    <text text-anchor="middle" font-weight="bold" fill="#03363d" dy="20">985</text>
+                </g>
+            </svg>
+        </div>
+        
+        <!-- Static Legend -->
+        <div class="legend">
+            <div class="legend-item">
+                <div class="legend-color" style="background-color: #03363d;"></div>
+                <div>Other (246)</div>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background-color: #30aabc;"></div>
+                <div>GDP (177)</div>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background-color: #5cc8d6;"></div>
+                <div>Industrial Production (148)</div>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background-color: #2c5cc5;"></div>
+                <div>CPI (99)</div>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background-color: #6698ff;"></div>
+                <div>PPI (79)</div>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background-color: #d8dcff;"></div>
+                <div>Real Estate (69)</div>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background-color: #37b8af;"></div>
+                <div>PMI (49)</div>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background-color: #49cec1;"></div>
+                <div>Fixed Asset Investment (39)</div>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background-color: #bdf3f0;"></div>
+                <div>Retail Sales (30)</div>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background-color: #14a88e;"></div>
+                <div>Other Categories (49)</div>
+            </div>
+        </div>
+    </div>
+</body>
+</html> 

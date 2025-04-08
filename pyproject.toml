@@ -21,7 +21,7 @@ dependencies = [
     "lxml",
     "ruff",
     "pulp>=3.1.1",
-    "askshare",
+    "pypdf>=5.4.0",
 ]
 
 [pip]
