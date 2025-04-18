@@ -25,10 +25,7 @@
 # - Stress testing portfolios under different economic scenarios
 # - Long-term forecasting that accounts for loan aging patterns
 #
-# References:
-# - Bellotti, A., & Crook, J. (2015). A vintage model of credit risk stress testing.
-#   Journal of the Operational Research Society, 66(8), 1342-1352.
-#   https://www.tandfonline.com/doi/full/10.1057/jors.2015.97
+
 
 import pandas as pd
 import numpy as np
