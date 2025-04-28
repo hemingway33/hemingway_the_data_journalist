@@ -1,78 +1,61 @@
-# Simulation Instructions Summary
+# Loan Portfolio Exit Strategy Simulation
 
-## Initial Goal
-Simulate and compare loan portfolio exit strategies for a high-loss portfolio. Visualize results for profit maximization or loss minimization.
+## Project Goal
 
-## Portfolio & Base Parameters
-- **Loans:** 10,000
-- **Average Balance:** $100,000
-- **Structure:** 12-month balloon (11 months interest-only, principal payoff month 12)
-- **Interest Rate:** 12% APR
-- **PD Bins:** 8 bins with increasing Predicted Default rates (`PD_RATES`).
-- **High-Risk Bins:** Indices 6 and 7.
-- **Standard Recovery Rate:** 30%.
-- **Funding Cost:** 3% annual rate.
-- **Discount Rate:** 3% (same as funding cost).
+This simulation analyzes and compares different exit strategies for a portfolio of balloon payment loans over a multi-year horizon. The goal is to evaluate the Net Present Value (NPV) and Total Absolute Loss under various scenarios, considering factors like customer churn, funding costs, default rates, recovery rates, and specific strategy interventions.
 
-## Simulation Time Horizon & Churn
-- **Simulation Years:** 3 years (used for S1 and S3 multi-year horizon).
-- **Churn Rate:** 30% annually, applied at the start of each year to the remaining portfolio in multi-year simulations.
+## Portfolio & Baseline Assumptions
 
-## Baseline Strategy (S0)
-- **Type:** Single-period calculation.
-- **Logic:** No intervention. Original 12-month balloon loan structure.
-- **Output:** 1-year Net P&L After Funding, 1-year Absolute Loss.
+*   **Initial Portfolio:** 10,000 loans, $100,000 average balance per loan.
+*   **Loan Type:** Balloon payment (interest paid monthly, principal at end of 12 months).
+*   **Interest Rate:** 12% APR (1% monthly).
+*   **Funding Cost:** 3% annual rate.
+*   **Risk Bins:** 8 bins with increasing Predicted Default (PD) rates (2% to 35%). Bins 7 and 8 are considered high-risk.
+*   **Standard Recovery:** 30% recovery on defaulted principal for non-treated loans.
+*   **Simulation Horizon:** 3 years.
+*   **Churn:** 30% annual churn rate (loans paid off/removed).
+*   **Discount Rate:** 3% (equal to funding cost).
 
-## Strategy 1: Recall
-- **Type:** Multi-year simulation (over `SIMULATION_YEARS`).
-- **Logic:**
-    - Applied each year to loans currently classified in high-risk bins.
-    - Loans are recalled at the end of their 12-month term.
-    - Non-defaults pay off (earn 11 months interest).
-    - Defaults occur based on bin PD.
-    - **Parameter:** Recovery Rate (`RECOVERY_RATES_STRAT1`) applied specifically to *high-risk* defaults.
-    - Non-high-risk bin defaults use `STANDARD_RECOVERY_RATE`.
-- **Output:** NPV over `SIMULATION_YEARS`, Total Absolute Loss over `SIMULATION_YEARS`.
+## Simulated Strategies
 
-## Strategy 2: Mandatory 24m Amortization w/ High-Risk Treatment
-- **Type:** Multi-year simulation (runs for exactly 2 years).
-- **Logic:**
-    - Applies after initial churn in Year 1.
-    - **Rate Increase:** Interest rate increased by 5% absolute (`EXTENSION_RATE_INCREASE`) for *all* loans entering the 24m amortization.
-    - **Low-Risk Loans:** Convert directly to a 24-month amortizing structure at the increased rate. Total 24m P&L/Loss calculated upfront and allocated 50/50 to Year 1 and Year 2.
-    - **High-Risk Loans:**
-        - **Refusal:** 5% probability (`REFUSAL_PROBABILITY`) refuse extension and follow Baseline default logic for Year 1.
-        - **Acceptance (95%):**
-            - **Haircut:** 10% immediate principal reduction (`PRINCIPAL_REDUCTION_FACTOR`). Haircut loss booked in Year 1.
-            - **PD Reduction:** Parameter `DEFAULT_REDUCTION_FACTORS` applied to reduce the original bin PD for the 24m term.
-            - **Extension:** Enter 24m amortization on *reduced* principal at the *increased* rate.
-            - Total 24m P&L/Loss (including haircut impact) calculated upfront and allocated 50/50 to Year 1 and Year 2.
-    - Portfolio fully exits after Year 2.
-- **Output:** 2-year NPV, 2-year Total Absolute Loss, 2-year Cumulative NPV list.
+### Baseline (Standard Operation)
 
-## Strategy 3: Repeated 12m Balloon Extension w/ Haircut
-- **Type:** Multi-year simulation (over `SIMULATION_YEARS`).
-- **Logic:**
-    - Applied each year only to loans currently classified in high-risk bins.
-    - **Refusal:** 5% probability (`REFUSAL_PROBABILITY`) refuse extension and follow Baseline default logic for that year.
-    - **Acceptance (95%):**
-        - **Haircut:** 10% immediate principal reduction (`PRINCIPAL_REDUCTION_FACTOR`).
-        - **Rate Increase:** Interest rate increased by 5% absolute (`EXTENSION_RATE_INCREASE`).
-        - **Extension:** New 12-month balloon loan on the *reduced* principal at the *increased* rate.
-        - **PD Reduction:** Parameter `DEFAULT_REDUCTION_FACTORS` applied to reduce the original bin PD for this 12-month extension term.
-        - **Default Timing (Split):** 1/3 of total defaults occur mid-term (months 1-11, loss only), 2/3 occur at end-term (month 12 payoff, interest collected before loss).
-        - **Continuation:** Survivors continue to the next year with the reduced balance, subject to churn and re-evaluation (may remain high-risk and repeat S3).
-- **Output:** NPV over `SIMULATION_YEARS`, Total Absolute Loss over `SIMULATION_YEARS`, Yearly Cumulative NPV list, Yearly Balance list.
+*   Loans run through their standard 12-month balloon term.
+*   At the end of the term, loans either default (based on their bin's PD rate) or pay off the principal.
+*   Defaulted loans recover principal based on the `STANDARD_RECOVERY_RATE` (30%).
+*   Surviving loans (those that pay off) leave the portfolio.
+*   Annual churn is applied at the start of each year.
 
-## Comparisons & Outputs
-- **Metrics:** Net P&L After Funding (Baseline), NPV (S1, S2, S3), Absolute Loss (Baseline), Total Absolute Loss (S1, S2, S3 horizon).
-- **Plot 1 (NPV):** Compare S1 NPV, S2 NPV, S3 NPV vs. parameters, show Baseline P&L AF reference.
-- **Plot 2 (Loss):** Compare S1 Total Loss, S2 Total Loss, S3 Total Loss vs. parameters, show Baseline Abs Loss reference.
-- **Plot 3 (Cumulative NPV):** Show cumulative NPV evolution for S2 (2 years) and S3 (full horizon) over time. Show Baseline marker (Yr 1 P&L) and S1 range bar (Final NPV at end year) for context.
-- **Plot 4 (S3 Balance):** Show portfolio balance evolution over time for S3 under different reduction factors.
-- **CSV Exports:**
-    - `results_single_period_summary.csv`: Baseline metrics.
-    - `results_s3_yearly_pnl_af.csv`: Strategy 3 yearly Net P&L AF, columns by reduction factor.
-    - `results_s3_yearly_loss.csv`: Strategy 3 yearly Absolute Loss, columns by reduction factor.
+### Strategy 1: Recall High-Risk Loans (断贷)
 
-*(Note: Some parameter values and specific plot representations were adjusted during the process based on clarifications and iterative development.)* 
+*   Same as Baseline for low-risk loans.
+*   **High-Risk Loans (Bins 7 & 8):** These loans are recalled/terminated at the end of their initial 12-month term. The outcome depends on a specified `RECOVERY_RATES_STRAT1` (varied from 10% to 50% in the simulation). This means the lender forces repayment or liquidation, achieving a recovery rate different from the standard one.
+*   The simulation tests the impact of different recovery rates achieved through this recall process.
+
+### Strategy 2: Mandatory Extension (24m Amortization)
+
+*   This strategy applies a mandatory 24-month extension with changes, simulated over a 2-year horizon (since the extension defines the period).
+*   **Low-Risk Loans:** Extended for 24 months on an *amortizing* basis (principal and interest payments). Survival/default is based on the original `annual_pd`, modeled using a *piecewise exponential survival* model (higher default hazard in the first 6 months, ratio defined by `HAZARD_RATE_RATIO`).
+*   **High-Risk Loans:**
+    *   A small percentage (`REFUSAL_PROBABILITY`, 5%) refuse the extension and follow the Baseline default/payoff logic based on their original PD.
+    *   The rest accept the extension:
+        *   Receive an immediate principal haircut (`PRINCIPAL_REDUCTION_FACTOR`, 10%).
+        *   Enter a 24-month *amortizing* repayment plan on the *reduced* principal.
+        *   Interest rate is increased by `EXTENSION_RATE_INCREASE` (5%).
+        *   Their annual PD rate is *reduced* by `DEFAULT_REDUCTION_FACTORS` (varied from 20% to 60% reduction).
+        *   Survival/default during the 24 months is modeled using the *reduced PD* and the *piecewise exponential survival* model.
+*   The simulation tests the impact of different default reduction factors achieved through this intervention.
+
+### Strategy 3: Selective Extension (Indefinite Balloon)
+
+*   Same as Baseline for low-risk loans.
+*   **High-Risk Loans:**
+    *   A small percentage (`REFUSAL_PROBABILITY`, 5%) refuse extension and follow Baseline logic.
+    *   The rest accept the extension:
+        *   Receive an immediate principal haircut (`PRINCIPAL_REDUCTION_FACTOR`, 10%).
+        *   Enter a *new 12-month balloon term* on the *reduced* principal.
+        *   Interest rate is increased by `EXTENSION_RATE_INCREASE` (5%).
+        *   Their annual PD rate is *reduced* by `DEFAULT_REDUCTION_FACTORS` (varied from 20% to 60% reduction).
+        *   At the end of this 12-month extension, they either default (based on the *reduced PD*) or pay off the reduced principal.
+        *   If they pay off, they *can potentially repeat the process* in subsequent years (receive another haircut, another 12m balloon extension with the reduced PD) as long as the simulation runs. This allows for modeling an indefinite extension scenario.
+*   The simulation tests the impact of different default reduction factors on this rolling extension strategy. 

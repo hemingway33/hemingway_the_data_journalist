@@ -2,6 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
 import os
+import seaborn as sns
 
 # --- Simulation Parameters ---
 N_LOANS = 10000
@@ -25,6 +26,7 @@ EXTENSION_MONTHS = 24
 PRINCIPAL_REDUCTION_FACTOR = 0.10 # 10% haircut on principal for extended loans
 REFUSAL_PROBABILITY = 0.05 # 5% probability customer refuses extension and defaults
 EXTENSION_RATE_INCREASE = 0.05 # Absolute increase in annual rate for extended loans (e.g., 0.05 means +5%)
+HAZARD_RATE_RATIO = 3.0 # Hazard rate in first 6 months is X times higher than months 7-24 for S2 piecewise model
 
 # Assume a standard recovery rate for defaults occurring in non-recalled/non-extended loans or during extension
 STANDARD_RECOVERY_RATE = 0.3
@@ -99,6 +101,45 @@ def calculate_exponential_survival_probs(annual_pd, max_months):
     months = np.arange(max_months + 1)
     survival_probs = np.exp(-hazard_lambda * months / 12.0)
     return survival_probs.tolist()
+
+def calculate_piecewise_survival_probs(annual_pd, max_months, hazard_rate_ratio, transition_month=6):
+    """Calculates monthly survival probabilities using a piecewise exponential model.
+
+    Assumes a higher constant hazard rate (lambda1) up to transition_month,
+    and a lower constant hazard rate (lambda2) afterwards.
+    The rates are calibrated such that the 24-month survival matches the
+    survival implied by the annual_pd over 2 years (S_annual(1)^2),
+    and lambda1 = hazard_rate_ratio * lambda2.
+    """
+    if annual_pd <= 0: return [1.0] * (max_months + 1)
+    if annual_pd >= 1.0: return [1.0] + [0.0] * max_months
+
+    target_2yr_survival = (1.0 - annual_pd)**2
+    if target_2yr_survival < 1e-9: # Avoid log(0)
+        lambda1 = float('inf')
+        lambda2 = float('inf')
+    else:
+        # Derived from: exp(-lambda1 * 0.5 - lambda2 * 1.5) = target_2yr_survival
+        # and lambda1 = hazard_rate_ratio * lambda2
+        log_target_survival = np.log(target_2yr_survival)
+        lambda2 = -log_target_survival / (0.5 * hazard_rate_ratio + 1.5)
+        lambda1 = hazard_rate_ratio * lambda2
+
+    survival_probs = [1.0] # S(0) = 1
+    months = np.arange(1, max_months + 1)
+    t_scaled = months / 12.0
+    transition_time_scaled = transition_month / 12.0
+
+    for t_s in t_scaled:
+        if t_s <= transition_time_scaled:
+            s_t = np.exp(-lambda1 * t_s)
+        else:
+            # S(t) = S(transition) * exp(-lambda2 * (t - transition))
+            s_transition = np.exp(-lambda1 * transition_time_scaled)
+            s_t = s_transition * np.exp(-lambda2 * (t_s - transition_time_scaled))
+        survival_probs.append(max(0.0, s_t))
+
+    return survival_probs
 
 # --- Single-Period Functions (OBSOLETE - Kept for reference only) ---
 # def calculate_baseline_profit_loss(): ...
@@ -257,7 +298,8 @@ def _calculate_s2_low_risk_outcome(n_loans, start_balance, annual_pd):
     # Use original PD for low-risk
     effective_annual_pd = max(0, min(annual_pd, 0.99999))
     
-    survival_probs = calculate_exponential_survival_probs(effective_annual_pd, EXTENSION_MONTHS)
+    # Use piecewise survival model
+    survival_probs = calculate_piecewise_survival_probs(effective_annual_pd, EXTENSION_MONTHS, HAZARD_RATE_RATIO)
     
     expected_pnl_per_loan_ext = 0.0
     expected_loss_per_loan_ext = 0.0
@@ -305,7 +347,8 @@ def _calculate_s2_high_risk_acceptor_outcome(n_accept, current_balance, pd_rate_
     # Apply PD reduction factor
     reduced_pd_annual = pd_rate_annual * (1 - reduction_factor)
     reduced_pd_annual = max(0, min(reduced_pd_annual, 0.99999))
-    survival_probs = calculate_exponential_survival_probs(reduced_pd_annual, EXTENSION_MONTHS)
+    # Use piecewise survival model
+    survival_probs = calculate_piecewise_survival_probs(reduced_pd_annual, EXTENSION_MONTHS, HAZARD_RATE_RATIO)
     
     expected_pnl_per_loan_ext = 0.0
     expected_loss_per_loan_ext = 0.0
@@ -506,7 +549,7 @@ def simulate_strategy_2(default_reduction_factor):
             pnl_high_risk -= initial_haircut_loss
 
             # Calculate increased rate for extension
-            extended_annual_rate = INTEREST_RATE_ANNUAL + EXTENSION_RATE_INCREASE
+            extended_annual_rate = INTEREST_RATE_ANNUAL
             extended_monthly_rate = extended_annual_rate / 12
 
             # Simulation based on reduced principal & 24m installment term
@@ -515,7 +558,7 @@ def simulate_strategy_2(default_reduction_factor):
 
             reduced_pd_annual = pd_rate_annual * (1 - default_reduction_factor)
             reduced_pd_annual = max(0, min(reduced_pd_annual, 0.99999))
-            survival_probs = calculate_exponential_survival_probs(reduced_pd_annual, EXTENSION_MONTHS)
+            survival_probs = calculate_piecewise_survival_probs(reduced_pd_annual, EXTENSION_MONTHS, HAZARD_RATE_RATIO)
             expected_pnl_per_loan_accept = 0
             expected_loss_per_loan_accept = 0
             bin_expected_duration_accept = 0
@@ -810,135 +853,146 @@ if __name__ == "__main__":
     print(f"  Saved final summary metrics to {summary_path}")
 
     # --- Visualization (Comparing Multi-Year S1, S2, S3 vs Multi-Year Baseline) --- 
-    plt.style.use('seaborn-v0_8-darkgrid')
+    # Set Seaborn theme first
+    sns.set_theme(style="whitegrid", palette="muted")
+
+    # Configure Matplotlib for Chinese characters (Mac-friendly fonts)
+    plt.rcParams['font.family'] = 'sans-serif' # Keep it generic
+    # Prioritize PingFang SC, add other common Mac CJK fonts
+    plt.rcParams['font.sans-serif'] = ['PingFang SC', 'Songti SC', 'STHeiti', 'Heiti TC', 'SimHei', 'WenQuanYi Micro Hei', 'Microsoft YaHei']
+    plt.rcParams['axes.unicode_minus'] = False  # Ensure minus sign is displayed correctly
 
     # --- P&L / NPV Plot ---
-    fig_pnl, (ax_pnl1, ax_pnl2) = plt.subplots(1, 2, figsize=(18, 7), sharey=True)
-    fig_pnl.suptitle(f'Strategy Comparison ({SIMULATION_YEARS}yr NPV/Loss Horizon)', fontsize=16)
+    fig_pnl, (ax_pnl1, ax_pnl2) = plt.subplots(1, 2, figsize=(16, 6), sharey=True)
+    fig_pnl.suptitle(f'策略对比：{SIMULATION_YEARS}年净现值(NPV)', fontsize=16, weight='bold')
 
     # Baseline (Multi-Year NPV as horizontal line)
-    ax_pnl1.axhline(baseline_npv, color='grey', linestyle='--', linewidth=2, label=f'Baseline NPV (${baseline_npv:,.0f})')
-    ax_pnl2.axhline(baseline_npv, color='grey', linestyle='--', linewidth=2, label=f'Baseline NPV')
+    ax_pnl1.axhline(baseline_npv, color='dimgray', linestyle='--', linewidth=1.5, label=f'基线NPV (${baseline_npv:,.0f})')
+    ax_pnl2.axhline(baseline_npv, color='dimgray', linestyle='--', linewidth=1.5, label='基线NPV')
 
     # Strategy 1 (Multi-Year NPV vs Recovery Rate)
     s1_rates_keys = list(strategy1_results_npv.keys())
     s1_npv_values = list(strategy1_results_npv.values())
-    ax_pnl1.plot(s1_rates_keys, s1_npv_values, marker='o', linestyle='-', linewidth=2, markersize=8, color='skyblue', label='Strategy 1 (Recall) NPV')
-    ax_pnl1.set_xlabel('Recovery Rate (Strategy 1)', fontsize=12)
-    ax_pnl1.set_ylabel(f'{SIMULATION_YEARS}-Year NPV ($)', fontsize=12)
-    ax_pnl1.set_title(f'Strategy 1 NPV vs. Baseline', fontsize=14)
-    ax_pnl1.legend()
-    ax_pnl1.grid(True)
+    ax_pnl1.plot(s1_rates_keys, s1_npv_values, marker='o', linestyle='-', linewidth=2, markersize=7, label='策略1 (断贷) NPV')
+    ax_pnl1.set_xlabel('回收率 (策略1)', fontsize=12)
+    ax_pnl1.set_ylabel(f'{SIMULATION_YEARS}年净现值 ($)', fontsize=12)
+    ax_pnl1.set_title(f'策略1 NPV 对比 基线', fontsize=14)
+    ax_pnl1.legend(frameon=True)
+    ax_pnl1.grid(True, linestyle=':', alpha=0.7)
     ax_pnl1.ticklabel_format(style='plain', axis='y')
 
-    # Strategy 2 (Multi-Year NPV vs Reduction Factor)
+    # Strategy 2 & 3 Plot (Overlay) - NOW BOTH MULTI-YEAR NPV
     s2_factors_keys = list(strategy2_results_npv.keys())
     s2_npv_values = list(strategy2_results_npv.values())
     s3_npv_values = list(strategy3_results_npv.values())
-    ax_pnl2.plot(s2_factors_keys, s2_npv_values, marker='s', linestyle='-', linewidth=2, markersize=8, color='lightcoral', label=f'Strategy 2 ({SIMULATION_YEARS}yr NPV)')
-    ax_pnl2.plot(s2_factors_keys, s3_npv_values, marker='^', linestyle=':', linewidth=2, markersize=8, color='mediumpurple', label=f'Strategy 3 ({SIMULATION_YEARS}yr NPV)')
-    ax_pnl2.set_xlabel('Default Reduction Factor (Strategy 2 & 3)', fontsize=12)
-    ax_pnl2.set_ylabel(f'{SIMULATION_YEARS}-Year NPV ($)', fontsize=12)
-    ax_pnl2.set_title(f'Strategies 2 & 3 NPV vs. Baseline', fontsize=14)
-    ax_pnl2.legend()
-    ax_pnl2.grid(True)
+    ax_pnl2.plot(s2_factors_keys, s2_npv_values, marker='s', linestyle='-', linewidth=2, markersize=7, label='策略2 NPV')
+    ax_pnl2.plot(s2_factors_keys, s3_npv_values, marker='^', linestyle=':', linewidth=2, markersize=7, label='策略3 NPV')
+    ax_pnl2.set_xlabel('违约降低系数 (策略2 & 3)', fontsize=12)
+    ax_pnl2.set_ylabel(f'{SIMULATION_YEARS}年净现值 ($)', fontsize=12)
+    ax_pnl2.set_title(f'策略2 & 3 NPV 对比 基线', fontsize=14)
+    ax_pnl2.legend(frameon=True)
+    ax_pnl2.grid(True, linestyle=':', alpha=0.7)
     ax_pnl2.ticklabel_format(style='plain', axis='y')
 
     plt.tight_layout(rect=[0, 0.03, 1, 0.95])
     # plt.show() # Show plots separately or together
 
     # --- Absolute Loss Plot ---
-    fig_loss, (ax_loss1, ax_loss2) = plt.subplots(1, 2, figsize=(18, 7), sharey=True)
-    fig_loss.suptitle(f'Strategy Comparison ({SIMULATION_YEARS}yr Total Absolute Loss Horizon)', fontsize=16)
+    fig_loss, (ax_loss1, ax_loss2) = plt.subplots(1, 2, figsize=(16, 6), sharey=True)
+    fig_loss.suptitle(f'策略对比：{SIMULATION_YEARS}年总绝对损失', fontsize=16, weight='bold')
 
     # Baseline Loss (Multi-Year Total Loss as horizontal line)
-    ax_loss1.axhline(baseline_loss, color='grey', linestyle='--', linewidth=2, label=f'Baseline Total Loss (${baseline_loss:,.0f})')
-    ax_loss2.axhline(baseline_loss, color='grey', linestyle='--', linewidth=2, label=f'Baseline Total Loss')
+    ax_loss1.axhline(baseline_loss, color='dimgray', linestyle='--', linewidth=1.5, label=f'基线损失 (${baseline_loss:,.0f})')
+    ax_loss2.axhline(baseline_loss, color='dimgray', linestyle='--', linewidth=1.5, label='基线损失')
 
     # Strategy 1 Loss (Multi-Year Total Loss vs Recovery Rate)
     s1_loss_values = list(strategy1_results_loss.values())
-    ax_loss1.plot(s1_rates_keys, s1_loss_values, marker='o', linestyle='-', linewidth=2, markersize=8, color='orange', label='Strategy 1 (Recall) Loss')
-    ax_loss1.set_xlabel('Recovery Rate (Strategy 1)', fontsize=12)
-    ax_loss1.set_ylabel(f'{SIMULATION_YEARS}-Year Total Absolute Loss ($)', fontsize=12)
-    ax_loss1.set_title(f'Strategy 1 Total Loss vs. Baseline', fontsize=14)
-    ax_loss1.legend()
-    ax_loss1.grid(True)
+    ax_loss1.plot(s1_rates_keys, s1_loss_values, marker='o', linestyle='-', linewidth=2, markersize=7, label='策略1 损失')
+    ax_loss1.set_xlabel('回收率 (策略1)', fontsize=12)
+    ax_loss1.set_ylabel(f'{SIMULATION_YEARS}年总绝对损失 ($)', fontsize=12)
+    ax_loss1.set_title(f'策略1 总损失 对比 基线', fontsize=14)
+    ax_loss1.legend(frameon=True)
+    ax_loss1.grid(True, linestyle=':', alpha=0.7)
     ax_loss1.ticklabel_format(style='plain', axis='y')
 
-    # Strategy 2 Loss (Multi-Year Total Loss vs Reduction Factor)
+    # Strategy 2 & 3 Loss Plot (Overlay) - NOW BOTH MULTI-YEAR TOTAL LOSS
     s2_loss_values = list(strategy2_results_loss.values())
     s3_total_loss_values = list(strategy3_results_loss.values())
-    ax_loss2.plot(s2_factors_keys, s2_loss_values, marker='s', linestyle='-', linewidth=2, markersize=8, color='red', label=f'Strategy 2 ({SIMULATION_YEARS}yr Total Loss)')
-    ax_loss2.plot(s2_factors_keys, s3_total_loss_values, marker='^', linestyle=':', linewidth=2, markersize=8, color='darkorange', label=f'Strategy 3 ({SIMULATION_YEARS}yr Total Loss)')
-    ax_loss2.set_xlabel('Default Reduction Factor (Strategy 2 & 3)', fontsize=12)
-    ax_loss2.set_ylabel(f'{SIMULATION_YEARS}-Year Total Absolute Loss ($)', fontsize=12)
-    ax_loss2.set_title(f'Strategies 2 & 3 Total Loss vs. Baseline', fontsize=14)
-    ax_loss2.legend()
-    ax_loss2.grid(True)
+    ax_loss2.plot(s2_factors_keys, s2_loss_values, marker='s', linestyle='-', linewidth=2, markersize=7, label='策略2 损失')
+    ax_loss2.plot(s2_factors_keys, s3_total_loss_values, marker='^', linestyle=':', linewidth=2, markersize=7, label='策略3 损失')
+    ax_loss2.set_xlabel('违约降低系数 (策略2 & 3)', fontsize=12)
+    ax_loss2.set_ylabel(f'{SIMULATION_YEARS}年总绝对损失 ($)', fontsize=12)
+    ax_loss2.set_title(f'策略2 & 3 总损失 对比 基线', fontsize=14)
+    ax_loss2.legend(frameon=True)
+    ax_loss2.grid(True, linestyle=':', alpha=0.7)
     ax_loss2.ticklabel_format(style='plain', axis='y')
 
     plt.tight_layout(rect=[0, 0.03, 1, 0.95])
-    plt.show()
+    # plt.show() # Show plots separately or together
 
     # --- Portfolio Balance Evolution Plot (Strategy 3 Multi-Year) ---
-    fig_balance, ax_balance = plt.subplots(figsize=(12, 7))
-    fig_balance.suptitle(f'Strategy 3: Portfolio Balance Evolution over {SIMULATION_YEARS} Years ({CHURN_RATE*100}% Churn)', fontsize=14)
+    fig_balance, ax_balance = plt.subplots(figsize=(10, 6))
+    fig_balance.suptitle(f'策略3：投资组合余额演变 ({CHURN_RATE*100}% 客户流失率)', fontsize=16, weight='bold')
 
     # Use a colormap for different reduction factors
-    colors = plt.cm.viridis(np.linspace(0, 1, len(DEFAULT_REDUCTION_FACTORS)))
+    palette = sns.color_palette("viridis", len(DEFAULT_REDUCTION_FACTORS))
 
     for idx, reduction_factor in enumerate(DEFAULT_REDUCTION_FACTORS):
         balances = strategy3_results_balances[reduction_factor]
         years = range(len(balances)) # Use actual length in case simulation stops early
-        ax_balance.plot(years, balances, marker='.', linestyle='-', linewidth=2, markersize=8, color=colors[idx], label=f'RF = {reduction_factor:.1f}')
+        ax_balance.plot(years, balances, marker='o', linestyle='-', linewidth=2, markersize=6, color=palette[idx], label=f'RF = {reduction_factor:.1f}')
 
-    ax_balance.set_xlabel('Year', fontsize=12)
-    ax_balance.set_ylabel('End-of-Year Portfolio Balance ($)', fontsize=12)
-    ax_balance.set_title('Projected Balance under Different Default Reduction Factors', fontsize=12)
-    ax_balance.legend(title="Reduction Factor")
-    ax_balance.grid(True)
+    ax_balance.set_xlabel('年份', fontsize=12)
+    ax_balance.set_ylabel('年末投资组合余额 ($)', fontsize=12)
+    ax_balance.set_title('不同降低系数下的预计余额', fontsize=14)
+    ax_balance.legend(title="降低系数", frameon=True)
+    ax_balance.grid(True, linestyle=':', alpha=0.7)
     ax_balance.ticklabel_format(style='plain', axis='y')
-    ax_balance.set_xticks(range(0, SIMULATION_YEARS, max(1, SIMULATION_YEARS // 10))) # Adjust x-ticks for clarity
+    ax_balance.set_xticks(range(0, SIMULATION_YEARS +1, max(1, SIMULATION_YEARS // 5))) # Adjust x-ticks for clarity
 
     plt.tight_layout(rect=[0, 0.03, 1, 0.95])
     plt.show() # Show all plots now
 
     # --- Cumulative NPV Plot ---
-    fig_cum_npv, ax_cum_npv = plt.subplots(figsize=(12, 7))
-    fig_cum_npv.suptitle(f'Cumulative NPV Comparison over {SIMULATION_YEARS} Years', fontsize=14)
+    fig_cum_npv, ax_cum_npv = plt.subplots(figsize=(11, 6))
+    fig_cum_npv.suptitle(f'{SIMULATION_YEARS}年累计NPV对比', fontsize=16, weight='bold')
 
     # Plot Baseline Cumulative NPV Timeseries
     plot_years_base = range(1, len(baseline_cum_npv) + 1)
-    ax_cum_npv.plot(plot_years_base, baseline_cum_npv, marker='D', linestyle='--', linewidth=2, markersize=6, color='grey', label='Baseline Cum. NPV', zorder=5)
+    ax_cum_npv.plot(plot_years_base, baseline_cum_npv, marker='D', linestyle='--', linewidth=1.5, markersize=5, color='dimgray', label='基线累计NPV', zorder=5)
 
     # Plot Strategy 1 Final NPV Range (as bar at end year)
     s1_min_npv = min(strategy1_results_npv.values())
     s1_max_npv = max(strategy1_results_npv.values())
     ax_cum_npv.plot([SIMULATION_YEARS, SIMULATION_YEARS], [s1_min_npv, s1_max_npv], color='skyblue', 
-                    linewidth=6, alpha=0.7, label=f'S1 {SIMULATION_YEARS}yr NPV Range')
+                    linewidth=6, alpha=0.6, label='策略1 最终NPV范围')
 
-    # Plot Strategy 2 Range (constant horizontal band)
-    s2_min_npv = min(strategy2_results_npv.values())
-    s2_max_npv = max(strategy2_results_npv.values())
-    ax_cum_npv.plot([2, 2], [s2_min_npv, s2_max_npv], color='lightcoral', linewidth=6, alpha=0.7, label=f'Strategy 2 Range (Total P&L AF)')
+    # Plot Strategy 2 Cumulative NPV Timeseries
+    palette_s2 = sns.color_palette("flare", len(DEFAULT_REDUCTION_FACTORS))
+    for idx, reduction_factor in enumerate(DEFAULT_REDUCTION_FACTORS):
+        cum_npv_s2 = strategy2_results_cumulative_npv[reduction_factor]
+        plot_years_s2 = range(1, len(cum_npv_s2) + 1) 
+        ax_cum_npv.plot(plot_years_s2, cum_npv_s2, marker='s', linestyle='--', linewidth=1.5, markersize=5, color=palette_s2[idx], label=f'策略2 累计NPV (RF={reduction_factor:.1f})')
 
     # Plot Strategy 3 Cumulative NPV Timeseries
-    colors = plt.cm.viridis(np.linspace(0, 1, len(DEFAULT_REDUCTION_FACTORS)))
+    palette_s3 = sns.color_palette("viridis", len(DEFAULT_REDUCTION_FACTORS))
     for idx, reduction_factor in enumerate(DEFAULT_REDUCTION_FACTORS):
         cum_npv = strategy3_results_cumulative_npv[reduction_factor]
         # Pad with 0 at year 0 for plotting from origin if needed
         plot_years = range(1, len(cum_npv) + 1) # Adjust length based on actual simulation duration
-        ax_cum_npv.plot(plot_years, cum_npv, marker='.', linestyle='-', linewidth=2, markersize=6, color=colors[idx], label=f'S3 Cum. NPV (RF={reduction_factor:.1f})')
+        ax_cum_npv.plot(plot_years, cum_npv, marker='^', linestyle='-', linewidth=1.5, markersize=5, color=palette_s3[idx], label=f'策略3 累计NPV (RF={reduction_factor:.1f})')
 
-    ax_cum_npv.set_xlabel('Year', fontsize=12)
-    ax_cum_npv.set_ylabel('Cumulative NPV ($)', fontsize=12)
-    ax_cum_npv.set_title(f'Strategy 3 Cumulative NPV Evolution vs. Single-Period Outcomes', fontsize=12)
-    ax_cum_npv.legend(bbox_to_anchor=(1.05, 1), loc='upper left', borderaxespad=0., title="Strategies / S3 RF")
-    ax_cum_npv.grid(True)
+    ax_cum_npv.set_xlabel('年份', fontsize=12)
+    ax_cum_npv.set_ylabel('累计NPV ($)', fontsize=12)
+    ax_cum_npv.set_title(f'各策略累计NPV演变', fontsize=14)
+    # Place legend carefully
+    ax_cum_npv.legend(loc='center left', bbox_to_anchor=(1, 0.5), ncol=1, frameon=True, title="策略 / 降低系数")
+    ax_cum_npv.grid(True, linestyle=':', alpha=0.7)
     ax_cum_npv.ticklabel_format(style='plain', axis='y')
-    ax_cum_npv.set_xticks(range(0, SIMULATION_YEARS + 1, max(1, SIMULATION_YEARS // 10)))
+    ax_cum_npv.set_xticks(range(0, SIMULATION_YEARS + 1, max(1, SIMULATION_YEARS // 5)))
 
-    plt.tight_layout(rect=[0, 0.03, 0.85, 0.95]) # Adjust right margin for legend
+    plt.subplots_adjust(right=0.80) # Adjust layout to make space for legend
+    plt.show() # Show plots now
 
     # --- Original Detailed Simulation Functions (Keep for reference/potential reuse) ---
     # def simulate_strategy_3(default_reduction_factor): ... (Original single-period version)
