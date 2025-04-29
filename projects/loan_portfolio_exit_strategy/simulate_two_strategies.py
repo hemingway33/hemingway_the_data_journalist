@@ -287,8 +287,9 @@ def _calculate_s2_low_risk_outcome(n_loans, start_balance, annual_pd):
     if n_loans <= 0: return 0.0, 0.0
 
     # Apply rate increase
-    extended_annual_rate = INTEREST_RATE_ANNUAL + EXTENSION_RATE_INCREASE
-    extended_monthly_rate = extended_annual_rate / 12
+    # Low-risk loans use the standard rate for their extension
+    extended_annual_rate = INTEREST_RATE_ANNUAL 
+    extended_monthly_rate = extended_annual_rate / 12 
     principal = start_balance
 
     # Simulation based on reduced principal & 24m installment term
@@ -864,7 +865,7 @@ if __name__ == "__main__":
 
     # --- P&L / NPV Plot ---
     fig_pnl, (ax_pnl1, ax_pnl2) = plt.subplots(1, 2, figsize=(16, 6), sharey=True)
-    fig_pnl.suptitle(f'策略对比：{SIMULATION_YEARS}年净现值(NPV)', fontsize=16, weight='bold')
+    fig_pnl.suptitle(f'贷款出清策略对比：{SIMULATION_YEARS}年净现值(NPV)', fontsize=16, weight='bold')
 
     # Baseline (Multi-Year NPV as horizontal line)
     ax_pnl1.axhline(baseline_npv, color='dimgray', linestyle='--', linewidth=1.5, label=f'基线NPV (${baseline_npv:,.0f})')
@@ -873,10 +874,10 @@ if __name__ == "__main__":
     # Strategy 1 (Multi-Year NPV vs Recovery Rate)
     s1_rates_keys = list(strategy1_results_npv.keys())
     s1_npv_values = list(strategy1_results_npv.values())
-    ax_pnl1.plot(s1_rates_keys, s1_npv_values, marker='o', linestyle='-', linewidth=2, markersize=7, label='策略1 (断贷) NPV')
-    ax_pnl1.set_xlabel('回收率 (策略1)', fontsize=12)
+    ax_pnl1.plot(s1_rates_keys, s1_npv_values, marker='o', linestyle='-', linewidth=2, markersize=7, label='策略1 (尾部断贷) NPV')
+    ax_pnl1.set_xlabel('逾期回收率 (策略1)', fontsize=12)
     ax_pnl1.set_ylabel(f'{SIMULATION_YEARS}年净现值 ($)', fontsize=12)
-    ax_pnl1.set_title(f'策略1 NPV 对比 基线', fontsize=14)
+    ax_pnl1.set_title('策略1 NPV 对比 基线', fontsize=14)
     ax_pnl1.legend(frameon=True)
     ax_pnl1.grid(True, linestyle=':', alpha=0.7)
     ax_pnl1.ticklabel_format(style='plain', axis='y')
@@ -887,9 +888,9 @@ if __name__ == "__main__":
     s3_npv_values = list(strategy3_results_npv.values())
     ax_pnl2.plot(s2_factors_keys, s2_npv_values, marker='s', linestyle='-', linewidth=2, markersize=7, label='策略2 NPV')
     ax_pnl2.plot(s2_factors_keys, s3_npv_values, marker='^', linestyle=':', linewidth=2, markersize=7, label='策略3 NPV')
-    ax_pnl2.set_xlabel('违约降低系数 (策略2 & 3)', fontsize=12)
+    ax_pnl2.set_xlabel('违约化解系数 (策略2 & 3)', fontsize=12)
     ax_pnl2.set_ylabel(f'{SIMULATION_YEARS}年净现值 ($)', fontsize=12)
-    ax_pnl2.set_title(f'策略2 & 3 NPV 对比 基线', fontsize=14)
+    ax_pnl2.set_title('策略2 & 3 NPV 对比 基线', fontsize=14)
     ax_pnl2.legend(frameon=True)
     ax_pnl2.grid(True, linestyle=':', alpha=0.7)
     ax_pnl2.ticklabel_format(style='plain', axis='y')
@@ -899,7 +900,7 @@ if __name__ == "__main__":
 
     # --- Absolute Loss Plot ---
     fig_loss, (ax_loss1, ax_loss2) = plt.subplots(1, 2, figsize=(16, 6), sharey=True)
-    fig_loss.suptitle(f'策略对比：{SIMULATION_YEARS}年总绝对损失', fontsize=16, weight='bold')
+    fig_loss.suptitle(f'贷款出清策略对比：{SIMULATION_YEARS}年总绝对损失', fontsize=16, weight='bold')
 
     # Baseline Loss (Multi-Year Total Loss as horizontal line)
     ax_loss1.axhline(baseline_loss, color='dimgray', linestyle='--', linewidth=1.5, label=f'基线损失 (${baseline_loss:,.0f})')
@@ -908,7 +909,7 @@ if __name__ == "__main__":
     # Strategy 1 Loss (Multi-Year Total Loss vs Recovery Rate)
     s1_loss_values = list(strategy1_results_loss.values())
     ax_loss1.plot(s1_rates_keys, s1_loss_values, marker='o', linestyle='-', linewidth=2, markersize=7, label='策略1 损失')
-    ax_loss1.set_xlabel('回收率 (策略1)', fontsize=12)
+    ax_loss1.set_xlabel('逾期回收率 (策略1)', fontsize=12)
     ax_loss1.set_ylabel(f'{SIMULATION_YEARS}年总绝对损失 ($)', fontsize=12)
     ax_loss1.set_title(f'策略1 总损失 对比 基线', fontsize=14)
     ax_loss1.legend(frameon=True)
@@ -920,9 +921,9 @@ if __name__ == "__main__":
     s3_total_loss_values = list(strategy3_results_loss.values())
     ax_loss2.plot(s2_factors_keys, s2_loss_values, marker='s', linestyle='-', linewidth=2, markersize=7, label='策略2 损失')
     ax_loss2.plot(s2_factors_keys, s3_total_loss_values, marker='^', linestyle=':', linewidth=2, markersize=7, label='策略3 损失')
-    ax_loss2.set_xlabel('违约降低系数 (策略2 & 3)', fontsize=12)
+    ax_loss2.set_xlabel('违约化解系数 (策略2 & 3)', fontsize=12)
     ax_loss2.set_ylabel(f'{SIMULATION_YEARS}年总绝对损失 ($)', fontsize=12)
-    ax_loss2.set_title(f'策略2 & 3 总损失 对比 基线', fontsize=14)
+    ax_loss2.set_title('策略2 & 3 总损失 对比 基线', fontsize=14)
     ax_loss2.legend(frameon=True)
     ax_loss2.grid(True, linestyle=':', alpha=0.7)
     ax_loss2.ticklabel_format(style='plain', axis='y')
@@ -944,8 +945,8 @@ if __name__ == "__main__":
 
     ax_balance.set_xlabel('年份', fontsize=12)
     ax_balance.set_ylabel('年末投资组合余额 ($)', fontsize=12)
-    ax_balance.set_title('不同降低系数下的预计余额', fontsize=14)
-    ax_balance.legend(title="降低系数", frameon=True)
+    ax_balance.set_title('不同化解系数下的预计余额', fontsize=14)
+    ax_balance.legend(title="化解系数", frameon=True)
     ax_balance.grid(True, linestyle=':', alpha=0.7)
     ax_balance.ticklabel_format(style='plain', axis='y')
     ax_balance.set_xticks(range(0, SIMULATION_YEARS +1, max(1, SIMULATION_YEARS // 5))) # Adjust x-ticks for clarity
@@ -984,9 +985,9 @@ if __name__ == "__main__":
 
     ax_cum_npv.set_xlabel('年份', fontsize=12)
     ax_cum_npv.set_ylabel('累计NPV ($)', fontsize=12)
-    ax_cum_npv.set_title(f'各策略累计NPV演变', fontsize=14)
+    ax_cum_npv.set_title('各策略累计NPV演变', fontsize=14)
     # Place legend carefully
-    ax_cum_npv.legend(loc='center left', bbox_to_anchor=(1, 0.5), ncol=1, frameon=True, title="策略 / 降低系数")
+    ax_cum_npv.legend(loc='center left', bbox_to_anchor=(1, 0.5), ncol=1, frameon=True, title="策略 / 违约化解系数")
     ax_cum_npv.grid(True, linestyle=':', alpha=0.7)
     ax_cum_npv.ticklabel_format(style='plain', axis='y')
     ax_cum_npv.set_xticks(range(0, SIMULATION_YEARS + 1, max(1, SIMULATION_YEARS // 5)))
