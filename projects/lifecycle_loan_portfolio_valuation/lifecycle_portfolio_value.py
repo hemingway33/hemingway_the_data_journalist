@@ -1,10 +1,33 @@
 import pandas as pd
 import numpy as np
+import matplotlib.pyplot as plt
 
 # --- Configuration ---
 
-def get_default_parameters():
-    """Returns a dictionary containing the default parameters from the spreadsheet."""
+def get_default_parameters(loss_curve_shape='default'):
+    """Returns a dictionary containing the default parameters.
+    Allows selecting different predefined loss curve shapes.
+    """
+
+    # Define different loss curve shapes
+    loss_curves = {
+        'default': {
+            1: 0.11, 2: 0.09, 3: 0.07, 4: 0.08, 5: 0.09, 6: 0.09
+        },
+        'high_early': { # Higher loss early, then drops
+            1: 0.18, 2: 0.12, 3: 0.08, 4: 0.07, 5: 0.07, 6: 0.07
+        },
+        'high_late': { # Lower loss early, peaks later
+            1: 0.07, 2: 0.06, 3: 0.08, 4: 0.10, 5: 0.13, 6: 0.14
+        },
+        'flatter': { # More constant loss rate
+            1: 0.10, 2: 0.10, 3: 0.09, 4: 0.09, 5: 0.10, 6: 0.10
+        }
+    }
+
+    if loss_curve_shape not in loss_curves:
+        raise ValueError(f"Unknown loss_curve_shape: {loss_curve_shape}. Valid shapes are: {list(loss_curves.keys())}")
+
     params = {
         # Single Account Model Params
         'initial_balance_new_cust': 13.00,  # 新户平均余额 (万)
@@ -18,9 +41,10 @@ def get_default_parameters():
         #     1: 1.80, 2: 1.97, 3: 2.15, 4: 2.32, 5: 2.50, 6: 2.71
         # },
 
-        'loss_rate_year': { # 预期损失率假设 (%)
-            1: 0.11, 2: 0.09, 3: 0.07, 4: 0.08, 5: 0.09, 6: 0.09
-        },
+        # Select the specified loss curve
+        'loss_rate_year': loss_curves[loss_curve_shape],
+        'loss_curve_shape_name': loss_curve_shape, # Store the name for tracking
+
         'marketing_cost_year': { # 市场营销费 (万元)
             1: 0.30, 2: 0.10, 3: 0.06, 4: 0.04, 5: 0.02, 6: 0.01
         },
@@ -210,7 +234,9 @@ def simulate_portfolio_profit(params, account_profit_df):
 
 # Function to generate randomized parameters for a simulation run
 def get_randomized_parameters(base_params):
-    """Generates a new parameter set by randomizing specific base parameters."""
+    """Generates a new parameter set by randomizing specific base parameters.
+       Note: Loss curve shape is fixed by base_params, but level can be scaled.
+    """
     params = base_params.copy() # Start with a copy of base params
 
     # --- Define Parameter Variations ---
@@ -219,13 +245,18 @@ def get_randomized_parameters(base_params):
 
     # Marketing Cost Multiplier: Normal distribution, mean 1.0, std dev 0.2 (min 0.5)
     marketing_multiplier = max(0.5, np.random.normal(loc=1.0, scale=0.2))
+    # Apply multiplier relative to the *original* default marketing costs if needed,
+    # or just apply to the current base_params costs.
+    # Applying to base_params['marketing_cost_year'] for simplicity here.
     params['marketing_cost_year'] = {
         year: cost * marketing_multiplier
         for year, cost in base_params['marketing_cost_year'].items()
     }
 
-    # Loss Rate Multiplier: Normal distribution, mean 1.0, std dev 0.3 (min 0.3)
-    loss_multiplier = max(0.3, np.random.normal(loc=1.0, scale=0.3))
+    # Loss Rate *Level* Multiplier (Optional - applied ON TOP of selected shape)
+    # Set scale to 0 if you ONLY want to test shapes, not level variations within shape batches.
+    loss_level_scale = 0.1 # Example: Allow +/- 10% variation around the selected curve's level
+    loss_multiplier = max(1.0 - loss_level_scale * 3, np.random.normal(loc=1.0, scale=loss_level_scale))
     params['loss_rate_year'] = {
         year: rate * loss_multiplier
         for year, rate in base_params['loss_rate_year'].items()
@@ -236,108 +267,125 @@ def get_randomized_parameters(base_params):
 
 
 if __name__ == "__main__":
-    # 1. Get default parameters (base for randomization)
-    default_params = get_default_parameters()
-    print("--- Default Parameters (Base for Simulation) ---")
-    print(f"Initial Balance: {default_params['initial_balance_new_cust']:.2f} 万")
-    print(f"Initial Interest Rate: {default_params['avg_interest_rate_new_cust']:.1%}")
-    print(f"Interest Rate Growth (Annual Additive): {default_params['interest_rate_growth']:.1%}")
-    print(f"Funding Cost Rate: {default_params['funding_cost_rate']:.1%}")
-    print(f"Balance Growth Rate: {default_params['balance_growth_rate']:.1%}")
-    print(f"Default Retention Rate: {default_params['retention_rate']:.1%}")
-    print("-" * 25)
 
-    # 2. Calculate single account profit trajectory (using DEFAULTS and FULLY DYNAMIC calculation)
-    account_profit_default_dynamic = calculate_single_account_profit(default_params)
-    print("\n--- Single Account Profit/Loss (Default Params, Fully Dynamic Calculation) ---")
-    print("Note: Uses dynamic income (Balance*(1-LossRate)*InterestRate) & loss calc.")
-    print("      May differ significantly from original sheet profit values.")
-    print(account_profit_default_dynamic[['Balance (万)', 'Interest Rate (%)', 'Gross Income (万)', 'Expected Loss (万)', 'Net Profit/Loss (万)']].round(2))
-    print("-" * 25)
+    LOSS_CURVE_SHAPES_TO_TEST = ['default', 'high_early', 'high_late', 'flatter']
+    N_SIMULATIONS_PER_SHAPE = 500 # Reduced simulations per shape for speed
 
-    # 3. Simulate portfolio profit using default parameters (and dynamic account profit calc)
-    portfolio_summary_default_dynamic, _, _ = simulate_portfolio_profit(default_params, account_profit_default_dynamic)
-    print("\n--- Portfolio Simulation Summary (Default Params, Fully Dynamic Calculation) ---")
-    print(portfolio_summary_default_dynamic.round(2))
-    print("-" * 25)
+    all_results_summary = []  # Store summary results from ALL batches
+    all_portfolio_summaries_by_shape = {shape: [] for shape in LOSS_CURVE_SHAPES_TO_TEST} # Store summaries per shape
 
+    print(f"--- Starting Batched Simulation ({N_SIMULATIONS_PER_SHAPE} runs per shape) ---")
 
-    # --- Monte Carlo Simulation ---
-    print("\n--- Running Monte Carlo Simulation ---")
-    N_SIMULATIONS = 1000  # Number of simulation runs
-    results_summary = []  # Store summary results (like initial loss status)
-    # all_portfolio_summaries = [] # Optional: Store full summary dataframes if memory allows
+    for shape_name in LOSS_CURVE_SHAPES_TO_TEST:
+        print(f"\n--- Running simulations for Loss Curve Shape: '{shape_name}' ---")
+        # 1. Get base parameters for this specific loss curve shape
+        base_params = get_default_parameters(loss_curve_shape=shape_name)
 
-    initial_loss_scenario_count = 0 # Count scenarios with loss in Year 1 or 2
+        # --- Optional: Print base info for this batch ---
+        # print(f"Initial Balance: {base_params['initial_balance_new_cust']:.2f} 万")
+        # print(f"Base Loss Rates: {base_params['loss_rate_year']}")
+        # print("-" * 10)
 
-    for i in range(N_SIMULATIONS):
-        # Generate randomized parameters for this run
-        random_params = get_randomized_parameters(default_params)
+        current_batch_initial_loss_count = 0
 
-        # Calculate account profit dynamically using the random parameters for this run
-        current_account_profit = calculate_single_account_profit(random_params)
+        for i in range(N_SIMULATIONS_PER_SHAPE):
+            # Generate randomized parameters (retention, marketing, optional loss level) for this run
+            random_params = get_randomized_parameters(base_params)
 
-        # Run the portfolio simulation with these parameters and the dynamic account profit
-        portfolio_summary = simulate_portfolio_profit(random_params, current_account_profit)[0] # Get summary dataframe
+            # Calculate account profit dynamically
+            current_account_profit = calculate_single_account_profit(random_params)
 
-        if portfolio_summary is not None:
-            # Store key results or the full summary
-            # all_portfolio_summaries.append(portfolio_summary)
+            # Run the portfolio simulation
+            portfolio_summary, _, _ = simulate_portfolio_profit(random_params, current_account_profit)
 
-            # Check for initial loss (Year 1 or Year 2 Profit < 0)
-            year_1_profit = portfolio_summary.loc[1, 'Total Annual Profit (万)']
-            year_2_profit = portfolio_summary.loc[2, 'Total Annual Profit (万)'] if 2 in portfolio_summary.index else 0
+            if portfolio_summary is not None:
+                all_portfolio_summaries_by_shape[shape_name].append(portfolio_summary)
 
-            is_initial_loss = (year_1_profit < 0) or (year_2_profit < 0)
-            if is_initial_loss:
-                initial_loss_scenario_count += 1
+                # Check for initial loss
+                year_1_profit = portfolio_summary.loc[1, 'Total Annual Profit (万)']
+                year_2_profit = portfolio_summary.loc[2, 'Total Annual Profit (万)'] if 2 in portfolio_summary.index else 0
+                is_initial_loss = (year_1_profit < 0) or (year_2_profit < 0)
+                if is_initial_loss:
+                    current_batch_initial_loss_count += 1
 
-            # Extract multipliers for reporting (using Year 1 as example)
-            loss_mult = random_params['loss_rate_year'].get(1,0) / default_params['loss_rate_year'].get(1,1)
-            mktg_mult = random_params['marketing_cost_year'].get(1,0) / default_params['marketing_cost_year'].get(1,1)
+                # Extract multipliers if needed (relative to the curve's base rates now)
+                # Note: loss_multiplier logic might need refinement if scale is 0
+                loss_mult = random_params['loss_rate_year'].get(1,0) / base_params['loss_rate_year'].get(1,1) if base_params['loss_rate_year'].get(1,1) else 1
+                mktg_mult = random_params['marketing_cost_year'].get(1,0) / base_params['marketing_cost_year'].get(1,1) if base_params['marketing_cost_year'].get(1,1) else 1
 
-            results_summary.append({
-                'run': i + 1,
-                'retention_rate': random_params['retention_rate'],
-                'loss_multiplier': loss_mult,
-                'marketing_multiplier': mktg_mult,
-                'year_1_profit': year_1_profit,
-                'year_2_profit': year_2_profit,
-                'year_6_profit': portfolio_summary.loc[6, 'Total Annual Profit (万)'] if 6 in portfolio_summary.index else 0,
-                'initial_loss': is_initial_loss
-            })
+                all_results_summary.append({
+                    'run_overall': len(all_results_summary) + 1,
+                    'loss_curve_shape': shape_name,
+                    'retention_rate': random_params['retention_rate'],
+                    'loss_level_multiplier': loss_mult,
+                    'marketing_multiplier': mktg_mult,
+                    'year_1_profit': year_1_profit,
+                    'year_2_profit': year_2_profit,
+                    'year_6_profit': portfolio_summary.loc[6, 'Total Annual Profit (万)'] if 6 in portfolio_summary.index else 0,
+                    'initial_loss': is_initial_loss
+                })
 
-        # Optional: Print progress
-        if (i + 1) % 100 == 0:
-            print(f"Completed simulation {i+1}/{N_SIMULATIONS}")
+            # Optional: Print progress
+            # if (i + 1) % 100 == 0:
+            #     print(f"  Completed run {i+1}/{N_SIMULATIONS_PER_SHAPE} for shape '{shape_name}'")
 
-    print(f"\n--- Simulation Results ({N_SIMULATIONS} runs) ---")
+        prob_initial_loss_batch = current_batch_initial_loss_count / N_SIMULATIONS_PER_SHAPE if N_SIMULATIONS_PER_SHAPE > 0 else 0
+        print(f"  Shape '{shape_name}': Probability of Initial Loss = {prob_initial_loss_batch:.2%}")
 
-    if not results_summary:
+    print(f"\n--- Overall Simulation Results ({len(all_results_summary)} total runs) ---")
+
+    if not all_results_summary:
         print("No simulation results generated.")
     else:
-        results_df = pd.DataFrame(results_summary)
+        results_df = pd.DataFrame(all_results_summary)
 
-        # Calculate probability of initial loss
-        prob_initial_loss = initial_loss_scenario_count / len(results_df)
-        print(f"Probability of Negative Annual Profit in Year 1 or 2: {prob_initial_loss:.2%}")
+        # --- Overall Analysis (across all shapes) ---
+        prob_initial_loss_overall = results_df['initial_loss'].mean()
+        print(f"Overall Probability of Negative Annual Profit in Year 1 or 2: {prob_initial_loss_overall:.2%}")
 
-        # Analyze scenarios with initial loss
-        initial_loss_scenarios = results_df[results_df['initial_loss'] == True]
-        if not initial_loss_scenarios.empty:
-            print("\n--- Analysis of Scenarios with Initial Loss ---")
-            print(f"Average Retention Rate in Loss Scenarios: {initial_loss_scenarios['retention_rate'].mean():.1%}")
-            print(f"Average Loss Multiplier in Loss Scenarios: {initial_loss_scenarios['loss_multiplier'].mean():.2f}x")
-            print(f"Average Marketing Multiplier in Loss Scenarios: {initial_loss_scenarios['marketing_multiplier'].mean():.2f}x")
-        else:
-            print("\nNo scenarios resulted in an initial loss under these dynamics.")
+        print("\n--- Analysis by Loss Curve Shape --- ")
+        print(results_df.groupby('loss_curve_shape')[['year_1_profit', 'year_6_profit', 'initial_loss']].mean().round(2))
 
-        # Analyze overall profit distribution
-        print("\n--- Overall Profit Analysis --- ")
-        print(f"Average Year 1 Profit: {results_df['year_1_profit'].mean():.2f} 万")
-        print(f"Average Year 6 Profit: {results_df['year_6_profit'].mean():.2f} 万")
-        print(f"Std Dev Year 6 Profit: {results_df['year_6_profit'].std():.2f} 万")
+        # --- Plotting Results ---
+        print("\n--- Generating Plots ---")
 
+        # Plot 1: Histograms (Example: Year 6 Profit, split by shape)
+        plt.figure(figsize=(10, 6))
+        for shape_name in LOSS_CURVE_SHAPES_TO_TEST:
+            plt.hist(results_df[results_df['loss_curve_shape'] == shape_name]['year_6_profit'],
+                     bins=20, alpha=0.6, label=f'Shape: {shape_name}')
+        plt.title('Distribution of Year 6 Profit by Loss Curve Shape')
+        plt.xlabel('Year 6 Profit (万)')
+        plt.ylabel('Frequency')
+        plt.legend()
+        plt.tight_layout()
 
-    print("\nSimulation complete. Check results above.")
-    # print("Consider further analysis on 'results_df' or 'all_portfolio_summaries'.")
+        # Plot 2: Average Profit Trend Comparison
+        plt.figure(figsize=(10, 6))
+        colors = plt.cm.viridis(np.linspace(0, 1, len(LOSS_CURVE_SHAPES_TO_TEST)))
+
+        for idx, shape_name in enumerate(LOSS_CURVE_SHAPES_TO_TEST):
+            summaries_for_shape = all_portfolio_summaries_by_shape.get(shape_name, [])
+            if summaries_for_shape:
+                # Concatenate all summary DataFrames for this shape
+                all_summaries_concat = pd.concat(summaries_for_shape)
+                average_trend = all_summaries_concat.groupby(all_summaries_concat.index)['Total Annual Profit (万)'].mean()
+
+                plt.plot(average_trend.index, average_trend.values, marker='o', linestyle='-', label=f'Shape: {shape_name}', color=colors[idx])
+                # Optional: Add fill_between for std dev per shape if desired
+                # std_dev_trend = all_summaries_concat.groupby(all_summaries_concat.index)['Total Annual Profit (万)'].std()
+                # plt.fill_between(average_trend.index, average_trend - std_dev_trend, average_trend + std_dev_trend, color=colors[idx], alpha=0.1)
+
+        plt.title('Average Annual Portfolio Profit Trend by Loss Curve Shape')
+        plt.xlabel('Business Year')
+        plt.ylabel('Average Profit (万)')
+        if not average_trend.empty:
+             plt.xticks(average_trend.index) # Ensure integer years on x-axis
+        plt.grid(True, linestyle='--', alpha=0.6)
+        plt.legend()
+        plt.tight_layout()
+
+        # Display plots
+        plt.show()
+
+    print("\nSimulation complete. Check results and plots above.")
