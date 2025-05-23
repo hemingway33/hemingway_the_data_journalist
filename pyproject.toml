@@ -23,6 +23,9 @@ dependencies = [
     "pulp>=3.1.1",
     "pypdf>=5.4.0",
     "jieba>=0.42.1",
+    "neo4j>=5.28.1",
+    "lifelines>=0.30.0",
+    "yfinance>=0.2.61",
 ]
 
 [pip]
