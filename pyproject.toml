@@ -26,6 +26,11 @@ dependencies = [
     "neo4j>=5.28.1",
     "lifelines>=0.30.0",
     "yfinance>=0.2.61",
+    "gymnasium[classic-control]>=1.1.1",
+    "scipy>=1.15.2",
+    "flask>=3.1.1",
+    "flask-cors>=6.0.0",
+    "requests>=2.32.3",
 ]
 
 [pip]
