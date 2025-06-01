@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Intelligent Credit Interview Agent</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f7f9;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            color: #333;
+        }
+        header {
+            background-color: #005A9E; /* Professional blue */
+            color: white;
+            padding: 15px 30px;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        header h1 {
+            margin: 0;
+            font-size: 1.8em;
+        }
+        .main-container {
+            display: flex;
+            flex: 1;
+            overflow: hidden; /* To contain child scrolling */
+            padding: 20px;
+            gap: 20px;
+        }
+        .chat-panel {
+            flex: 2;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        .chat-header {
+            padding: 15px;
+            border-bottom: 1px solid #e0e0e0;
+            background-color: #f9f9f9;
+        }
+        .chat-header h2 {
+            margin: 0;
+            font-size: 1.3em;
+            color: #005A9E;
+        }
+        .chat-messages {
+            flex-grow: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .message {
+            padding: 10px 15px;
+            border-radius: 18px;
+            max-width: 75%;
+            line-height: 1.4;
+        }
+        .client-message {
+            background-color: #0078D4; /* Brighter blue for client */
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 4px;
+        }
+        .agent-message {
+            background-color: #e9ecef; /* Light grey for agent */
+            color: #333;
+            align-self: flex-start;
+            border-bottom-left-radius: 4px;
+        }
+        .chat-input {
+            display: flex;
+            padding: 15px;
+            border-top: 1px solid #e0e0e0;
+            background-color: #f9f9f9;
+        }
+        .chat-input input[type="text"] {
+            flex-grow: 1;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 20px;
+            margin-right: 10px;
+            font-size: 1em;
+        }
+        .chat-input button {
+            padding: 10px 20px;
+            background-color: #005A9E;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background-color 0.3s ease;
+        }
+        .chat-input button:hover {
+            background-color: #004170;
+        }
+        .sidebar {
+            flex: 1;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.05);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            overflow-y: auto;
+        }
+        .embodiment-panel, .iteration-panel {
+            background-color: #f9f9f9;
+            padding: 20px;
+            border-radius: 6px;
+            border: 1px solid #e0e0e0;
+        }
+        .embodiment-panel h3, .iteration-panel h3 {
+            margin-top: 0;
+            color: #005A9E;
+            font-size: 1.2em;
+            border-bottom: 1px solid #d0d0d0;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+        .embodiment-placeholder {
+            width: 100%;
+            height: 200px;
+            background-color: #e0e0e0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #777;
+            text-align: center;
+            border-radius: 4px;
+            font-style: italic;
+        }
+        .iteration-panel ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .iteration-panel li {
+            margin-bottom: 12px;
+        }
+        .iteration-panel button {
+            background-color: #6c757d; /* Secondary button color */
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+            text-align: left;
+            font-size: 0.95em;
+            transition: background-color 0.3s ease;
+        }
+        .iteration-panel button:hover {
+            background-color: #5a6268;
+        }
+        .status-indicator {
+            font-size: 0.9em;
+            color: #555;
+            margin-top: 10px;
+            padding: 8px;
+            background-color: #e9ecef;
+            border-radius: 4px;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .main-container {
+                flex-direction: column;
+            }
+            .chat-panel, .sidebar {
+                flex: none; /* Disable flex grow/shrink */
+                width: 100%;
+                height: auto; /* Adjust height as needed */
+            }
+            .chat-messages {
+                min-height: 200px; /* Ensure some space on mobile */
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Intelligent Credit Interview Agent</h1>
+    </header>
+
+    <div class="main-container">
+        <div class="chat-panel">
+            <div class="chat-header">
+                <h2>Conversation with SME Client</h2>
+            </div>
+            <div class="chat-messages" id="chatMessages">
+                <!-- Agent initial greeting -->
+                <div class="message agent-message">
+                    Hello! I'm the Credit Interview Agent. I'm here to help you with your business financing needs. To start, could you please tell me a bit about your business?
+                </div>
+                <!-- Example client message -->
+                <div class="message client-message">
+                    Hi, I run a small bakery and I'm looking for a loan to expand my operations.
+                </div>
+                 <div class="message agent-message">
+                    That's great. Expanding a bakery sounds exciting! Could you tell me more about your expansion plans and what specifically the loan would be used for? For example, are you looking to purchase new equipment, renovate your space, or increase staffing?
+                </div>
+                <!-- More messages will be added here by JavaScript -->
+            </div>
+            <div class="chat-input">
+                <input type="text" id="userInput" placeholder="Type your message...">
+                <button onclick="sendMessage()">Send</button>
+            </div>
+        </div>
+
+        <div class="sidebar">
+            <div class="embodiment-panel">
+                <h3>Digital Agent</h3>
+                <div class="embodiment-placeholder">
+                    (Digital Embodiment / Avatar Placeholder)
+                    <br/>
+                    <small>This area can display a visual representation of the AI agent to enhance user engagement.</small>
+                </div>
+            </div>
+
+            <div class="iteration-panel">
+                <h3>Analyst Oversight & System Iteration</h3>
+                <p style="font-size: 0.9em; color: #555;">Tools for credit analysts to guide and refine the AI system.</p>
+                <ul>
+                    <li><button onclick="reviewFlags()">Review AI-Flagged Responses</button></li>
+                    <li><button onclick="suggestRefinement()">Suggest Question Refinement</button></li>
+                    <li><button onclick="accessDashboard()">Access Analyst Dashboard</button></li>
+                </ul>
+                <div class="status-indicator">
+                    <strong>AI Status:</strong> Learning & Adapting <br/>
+                    <strong>Confidence Score (Current Topic):</strong> 85% (Illustrative)
+                </div>
+                 <p style="font-size: 0.8em; color: #777; margin-top: 15px;">
+                    This AI is powered by knowledgeable models and designed for continuous improvement with human-in-the-loop guidance.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function sendMessage() {
+            const userInput = document.getElementById('userInput');
+            const messageText = userInput.value.trim();
+            if (messageText === '') return;
+
+            const chatMessages = document.getElementById('chatMessages');
+
+            // Display client's message
+            const clientMessageDiv = document.createElement('div');
+            clientMessageDiv.classList.add('message', 'client-message');
+            clientMessageDiv.textContent = messageText;
+            chatMessages.appendChild(clientMessageDiv);
+
+            userInput.value = ''; // Clear input
+
+            // Simulate agent's response (placeholder)
+            // In a real application, this would involve an API call to the AI model
+            setTimeout(() => {
+                const agentMessageDiv = document.createElement('div');
+                agentMessageDiv.classList.add('message', 'agent-message');
+                // More sophisticated response generation would happen here
+                agentMessageDiv.textContent = "Thank you for sharing. Could you elaborate on that? (AI generated response)";
+                chatMessages.appendChild(agentMessageDiv);
+                chatMessages.scrollTop = chatMessages.scrollHeight; // Scroll to the bottom
+            }, 1000);
+
+            chatMessages.scrollTop = chatMessages.scrollHeight; // Scroll to the bottom
+        }
+
+        // Add event listener for Enter key in input field
+        document.getElementById('userInput').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+
+        // Placeholder functions for iteration panel
+        function reviewFlags() {
+            alert("Feature: Analyst to review AI-flagged responses. (Not implemented in prototype)");
+            // This would typically navigate to a different view or open a modal
+            // where an analyst can see responses the AI marked as uncertain, ambiguous, or critical.
+        }
+
+        function suggestRefinement() {
+            alert("Feature: Analyst to suggest refinements to AI's questions or logic. (Not implemented in prototype)");
+            // This could open a form or interface where analysts can provide feedback
+            // on specific questions, suggest alternatives, or define new questioning paths.
+        }
+
+        function accessDashboard() {
+            alert("Feature: Navigate to the full Analyst Dashboard. (Not implemented in prototype)");
+            // This would lead to a comprehensive dashboard for managing the AI system,
+            // reviewing interview analytics, and overseeing the iteration process.
+        }
+
+        // Initial scroll to bottom if content overflows
+        window.onload = () => {
+            const chatMessages = document.getElementById('chatMessages');
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+    </script>
+</body>
+</html>
