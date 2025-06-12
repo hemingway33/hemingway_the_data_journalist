@@ -1,0 +1,1801 @@
+<html><head>
+<title>上海市特种行业（公章刻制业）治安管理信息系统</title>
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link type="favicon" rel="shortcut icon" href="css/images/favicon.ico">
+<link rel="stylesheet" href="css/csshake.min.css">
+<link href="css/layout.css" rel="stylesheet" media="screen">
+<link href="css/MainUI.css" rel="stylesheet" media="screen">
+<link href="css/bootstrap/bootstrap.min.css" rel="stylesheet" media="screen">
+<!-- <link href="css/bootstrap/bootstrap-select.css" /> -->
+<link href="css/bootstrap/bootstrapValidator.css">
+
+<link href="css/toastr.css" rel="stylesheet">
+<link rel="stylesheet" href="css/bootstrap/select2.min.css">
+
+<script type="text/javascript" src="js/bootstrap/jquery.js"></script>
+<script type="text/javascript" src="js/bootstrap/bootstrap.min.js"></script>
+<script type="text/javascript" src="js/bootstrap/bootstrapValidator.js"></script>
+<script type="text/javascript" src="js/Util_JS/toastr.js"></script>
+<script type="text/javascript" src="js/Util_JS/confirm.js"></script>
+<script type="text/javascript" src="js/Util_JS/comment.js"></script>
+<script src="js/bootstrap/select2.min.js"></script> 
+<script src="js/i18n/zh-CN.js"></script>
+<script type="text/javascript" src="js/MainHome.js"></script>
+<!-- <script type="text/javascript" src="js/MainHome.js"></script> -->
+<!-- <script type="text/javascript" src="js/index.js"></script>  -->
+<script type="text/javascript" src="js/Util_JS/messageWindow.js"></script>
+<style>
+body {
+	min-height: 765px;
+	overflow-y:anto;
+}
+</style>
+
+<style>
+
+.left_navigation{ width:40px; height:240px; position:fixed; left:0; top:50%; margin-top:-125px; z-index:900;cursor: pointer;}
+.left_navigation a{ width:40px; height:120px; line-height:50px; float:left; display:block; text-align:right;}
+.left_navigation .lanren1{ background:#D04B35;}
+.left_navigation .lanren2{ background:#329BCB;}
+
+</style>
+</head>
+<body style="overflow: auto">
+
+	<div class="UIheader">
+		<div class="UIheader_body ui-headerNew">
+			<div class="container">
+                    <div class="UIheaderContent"></div>
+				<!-- <div class="row" >
+				</div> -->
+			</div>
+			<div style="position: absolute; top: 25px; right: 6%; display: none;" id="loginOutDiv">
+			 
+	<button type="button" class="btn btn-success" id="mypopover" data-container="body" data-toggle="popover" data-placement="bottom">
+		&nbsp;&nbsp;&nbsp;<span class="glyphicon glyphicon-user" aria-hidden="true"></span>&nbsp;&nbsp;&nbsp;
+	</button>
+	<button class="btn btn-success" onclick="ywhtml(this)" rel="message" id="msgBut" title="" data-container="body" data-html="true" data-toggle="popover" data-placement="bottom" data-trigger="hover" data-original-title="提示"> 
+	  <div id="msgBtn" class="shake shake-slow">
+	      <span class="glyphicon glyphicon-envelope" aria-hidden="true"></span>&nbsp;<span id="msgCount"></span>
+	   </div>
+	</button>
+	<button onclick="LoginOut();" class="btn btn-success"> 退出 </button>
+	<button id="wzglBut" style="display: none;" onclick="ywhtml(this)" rel="user" class="btn btn-success">网站管理 </button>
+    </div>
+      <div style="position: absolute; top: 25px; left: 2%;" id="">
+   </div>
+	</div>
+	
+	
+ 	<div class="UIheardWindow">
+ 	  <div onclick="openCjwtModal2(this)" rel="cjwtIndex"><p style="font-size: 36px;color: white;text-align: left;align-items: left;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;常见问题解答</p></div>
+ 	  <div id="UiIndexHeardMenu" style="width: 45%;height: 200px;position: absolute;left: 19%;top:10%;display: none">
+ 	   <div class="UIIndexMenudiv" onclick="ywhtml(this)" rel="index">
+ 	      <div class="UIIndexMenudivImage1">
+ 	      </div>
+ 	   </div>
+ 	   <div class="UIIndexMenudiv" onclick="ywhtml(this)" rel="yw">
+ 	      <div class="UIIndexMenudivImage2"></div>
+ 	   </div>
+ 	   <div class="UIIndexMenudiv" onclick="ywhtml(this)" rel="ywcx">
+ 	     <div class="UIIndexMenudivImage3">
+ 	     
+ 	     </div>
+ 	   </div>
+ 	   <div class="UIIndexMenudiv" onclick="ywhtml(this)" rel="ywtj">
+ 	      <div class="UIIndexMenudivImage4">
+ 	      </div>
+ 	   </div>
+ 	  </div>
+ 	   <div class="UIIndexHeardFontdiv" id="UiIndexHeardFont" style="display: block;">
+ 	  
+ 	  </div> 
+	  <div class="UIContentBtuDiv" style="border: 1xp solid red;">
+	     <div onclick="openGackModal(this)" rel="fwck" class="UIBtuPoliceWin">
+	      <p>全市公安窗口名单</p>
+	     </div>
+	     <div onclick="openKzdwModal(this)" rel="kzdwckIndex" class="UIBtuZzdwWin">
+	      <p>全市刻章单位名单</p>
+	     </div>
+	      <div onclick="openCjwtModal(this)" rel="cjwtIndex" class="UIBtuCjwtWin">
+	      <p>常见问题</p>
+	     </div> 
+	  </div>
+	</div>
+	<div><p style="font-size: 18px;color: black;text-align: center;align-items: left; margin: 0 0 0px;">在业务办理过程中，如遇任何问题，可发送邮件至gajyzxt@163.com。并请在邮件中留下联系方式，以便我们及时答复。</p></div>
+	
+	<div id="htmlinform" style="min-height: 570px;">
+<!-- <html>-->
+ 
+<meta charset="UTF-8">
+<title>上海市特种行业（公章刻制业）治安管理信息系统</title>
+<link rel="stylesheet" href="css/bootstrap/bootstrap-table.css" type="text/css" media="screen">
+<link href="css/bootstrap/bootstrap-select.css">
+<script type="text/javascript" src="js/bootstrap/jquery.js"></script>
+<script type="text/javascript" src="js/bootstrap/bootstrap.min.js"></script>
+<script src="js/bootstrap/bootstrap-table.js" type="text/javascript"></script>
+<script src="js/bootstrap/bootstrap-table-zh-CN.js" type="text/javascript"></script>
+<link href="css/bootstrap/bootstrapValidator.css">
+<script type="text/javascript" src="js/bootstrap/bootstrapValidator.js"></script>
+<script type="text/javascript" src="js/index.js"></script>
+<script>
+        var request;
+        //XmlHttpRequest对象
+        function createXmlHttpRequest(){
+            if(window.ActiveXObject){ //如果是IE浏览器
+                return new ActiveXObject("Microsoft.XMLHTTP");
+            }else if(window.XMLHttpRequest){ //非IE浏览器
+                return new XMLHttpRequest();
+            }
+        }
+
+        function addEvent(name, func)//IE浏览器添加事件
+        {
+        	//alert('1');
+        	FaceCtrl.focus();
+  
+        }
+
+        function sleep(numberMillis) {
+            var now = new Date();
+            var exitTime = now.getTime() + numberMillis;
+            while (true) {
+                now = new Date();
+                if (now.getTime() > exitTime)
+                    return;
+            }
+        }
+
+		//采集人脸图像事件
+        function CaptureFaceImageEvent()
+        {
+        	//alert('2');
+		    //获取人脸比对报文
+            var data = FaceCtrl.GetFaceVerifyPackage();
+			//提交数据
+            submit(data);
+        }
+
+		//初始化人脸控件
+        function InitFaceControl()
+        { 
+        	//alert('3');
+            var res1 = new Object();
+            var res2 = new Object();
+            res2.imageWidth = 0;
+            res2.imageHeight = 0;
+            res2.imageType = 1;
+           res2.imageData = document.getElementById("zjimage").value; 
+           res1.photoInfo = res2;
+            var resstr = JSON.stringify(res1);
+			//初始化人脸控件
+            var result = FaceCtrl.InitControl();
+            var errormessage;
+            if(result != 0)
+            {
+                errormessage = "人脸控件初始化失败，错误码:" + result;
+                alert(errormessage);
+                return;
+            }
+			//设置人脸模板照片
+            result = FaceCtrl.SetFaceTemplatePhoto(resstr);
+            if(result != 0)
+            {
+                errormessage = "设置人脸模板照片失败，错误码:" + result;
+                alert(errormessage);
+                return;
+            }
+			//显示人脸窗口
+            result = FaceCtrl.ShowFaceWindow();
+            if(result != 0)
+            {
+                errormessage = "显示人脸窗口失败，错误码:" + result;
+                alert(errormessage);
+                return;
+            }
+        }
+		
+		function CaptureFaceStateEvent(nState)
+		{
+			if(nState == 11)
+			{
+			    //alert("关闭人脸窗口");
+			}
+		}
+
+        function submit(data){
+        	////console.log(data);
+        	//alert(data);
+        	//alert('4');
+            //构建JSON报文
+            //var json = {
+            //	face_data : data
+            //};
+			var imageData1  = JSON.parse(FaceCtrl.GetFaceimageData());
+       		var str3 = imageData1.faceBigImageInfo.imageData;
+       		var str2 = document.getElementById("zjimage").value; 
+            
+            var json = {
+            	//face_data : data
+           	   templateImgData : str2,
+               featureImgData :str3
+            };
+            //var str = JSON.stringify(json);
+            ////console.log(str);
+            //var url = "http://faceid.uruid.com/trustface/package/verification";
+            //request = createXmlHttpRequest();
+         /*    request.open("POST", url, true);
+            request.setRequestHeader("X-API-Key","test:htpTQd2dxL5mTXoY9kF");
+            request.onreadystatechange = updatePage;
+            request.send(str); */
+     /*        var obj = new Object();
+            obj.fontSize=0;
+            obj.resultType=1;
+            obj.message="核验失败";
+            obj.faceSimilarity=58.888; */
+            
+            $.ajax({
+        		type:"POST",
+        		dataType:"json",
+        		url:"FaceComparisonV3",
+        		contentType: 'application/json',
+        		data:JSON.stringify(json),
+        		success:function(data){
+        			if(data.succeed){
+        				var result = data.result;
+        				FaceCtrl.SetResultMessage(JSON.stringify(result));
+        				if(result.resultMessage.resultType == 1 || result.resultMessage.resultType == 2){
+    					    //重新采集人脸
+    						FaceCtrl.RecaptureFace();
+    					}else if(result.resultMessage.resultType == 0){
+    						var imageData  = JSON.parse(FaceCtrl.GetFaceimageData());
+    						var imgBase64 = "data:image/png;base64,"+imageData.faceBigImageInfo.imageData;
+    						$('#formSearch1 #xcimage').val(imageData.faceBigImageInfo.imageData);
+    						$('#formSearch1 #cyryxczp').attr("src",imgBase64);
+    						FaceCtrl.CloseFaceWindow();
+    						//用户登录
+    						 var data=new Object();
+    						data.dlzh=$('#loginCyryForm #sfzh').val();
+    						data.loginType=$('#loginCyryForm #loginType').val();
+    						data.yhlx=$('#loginCyryForm #loginYhlx').val();
+    						data.zzdwbm=$('#loginCyryForm #zzdwbm').val();
+    						loginMain(data); 
+    					} 
+        			}
+        			
+        		},
+        		complete: function(XMLHttpRequest, textStatus){
+        		},
+        		error:function(){
+        			
+        		},
+        	    beforeSend: function(xhr) {
+        	        xhr.setRequestHeader('x-phone-userid', sessionStorage.getItem("sessionId"));
+        	    }
+        	});
+            
+            
+           
+           // obj.fontSize=0;
+            //obj.resultType=0;
+            //obj.message="核验成功";
+            //obj.faceSimilarity=98.888;
+            
+           /*  var obj1 = new Object();
+            obj1.resultMessage=obj;
+            
+            FaceCtrl.SetResultMessage( JSON.stringify(obj1));
+			//if(res2.resultType == 1)
+		//	{
+			    //重新采集人脸
+				FaceCtrl.RecaptureFace();
+			//} */
+        }
+        function updatePage(){
+        	//alert('5');
+            var res1 = {};
+            var res2 = {};
+            res2.fontSize = 0;
+            var serverRes;
+			if(request.readyState == 4){
+				if(request.status == 200){
+					var res = request.responseText;
+					serverRes = eval('(' + res + ')');
+					res2.resultType = 0 - serverRes.code;
+					if(res2.resultType == 0)
+					{
+					    res2.message = "核验成功";
+					}
+					else if(res2.resultType == 1)
+					{
+					    res2.message = "核验失败";					    
+					}
+					else
+					{
+					    res2.resultType = 2
+					    res2.message = "服务器错误";	
+					}
+					res2.faceSimilarity = serverRes.confidence;
+					res1.resultMessage = res2;
+					var resstr = JSON.stringify(res1);
+					//设置人脸比对结果信息
+					FaceCtrl.SetResultMessage(resstr);
+					if(res2.resultType == 1)
+					{
+					    //重新采集人脸
+						FaceCtrl.RecaptureFace();
+					}
+				}else{					
+					res2.resultType = 2;
+					if(request.status == 0)
+					{
+					   res2.message = "服务连接失败"
+					}
+					else if(request.status == 400)
+					{
+					   res2.message = "报文格式错误"
+					}
+					else
+					{ 
+					   res2.message = "服务器内部错误"
+					}
+					res2.faceSimilarity = 0.0;
+					res1.resultMessage = res2;
+					var resstr = JSON.stringify(res1);
+					//设置人脸比对结果信息
+					FaceCtrl.SetResultMessage(resstr);
+				}
+			}
+        }
+    </script>
+ 
+<!--<body> -->
+<object id="CertCtl" name="CertCtl" width="0" height="0" classid="CLSID:BC044A60-23CC-4F5C-8C16-476648435AC1"></object>
+<object id="FaceCtrl" name="FaceCtrl" width="0" height="0" classid="clsid:2434023D-2325-4BBB-840E-86124EA4B27F"></object>	
+	
+		
+ <!--  	<div class="UIheardWindow"  >
+	  <div class="UIContentBtuDiv">
+	     <div onclick="openGackModal(this)" rel="fwck"  class="UIBtuPoliceWin">
+	      <p>公安窗口</p>
+	     </div>
+	     <div onclick="openKzdwModal(this)" rel="kzdwck" class="UIBtuZzdwWin">
+	      <p>刻章单位</p>
+	     </div>
+	  </div>
+	</div>  --> 
+	<div id="showTopicWindow" style="min-height: 600px;width: 18%;position: absolute;">
+	  <div id="imgDiv" style="position: relative; z-index: 9999; width: 200px; min-height: 85px; top: 365px; left: -1px;">
+            <div style="position: absolute;z-index: 10001;left: 10px;top: 10px;background-image: url('./css/images/indexgbgg.png');
+	    background-size:100% 100%;width: 100%;min-height: 155px">
+            <p style="font-size: 16px;font-weight: 600;color: #114ec9;text-align: center;margin-top: 8px">最新公告</p>
+            <p style="height: 15px;width: 70%;"></p>
+            <a id="indexgbggContext" onclick="indexFootLoad(this)" rel="indexGbgg" style="cursor: pointer;color: #114ec9;margin-left: 20%;
+            margin-right: 55px;display: block;width: 120px;margin-bottom: 65px;position: relative;font-size: 14px;font-weight: 600">企业变更一件事升级说明（版本：V1_2024052001_17）</a>
+            </div>
+      </div>
+	</div>
+		<!-- 中间显示图片跟登录窗口开始 -->
+		    <div class="UImCentreDiv">
+		      <div class="UImCentreDivImages">
+		        <div style="width: 19%;float: left;border: 1px solid #ddd;">
+		        <img alt="首页" src="css/images/showIndex1.png" height="140px;" width="100%">
+		        </div>
+		        <div class="UImCentreDivImageStylr">
+		        <img alt="业务办理" src="css/images/showIndex2.png" height="140px;" width="100%">
+		        </div>
+		        <div class="UImCentreDivImageStylr">
+		        <img alt="业务查询" src="css/images/showIndex3.png" height="140px;" width="100%">
+		        </div>
+		        <div class="UImCentreDivImageStylr">
+		        <img alt="业务统计" src="css/images/showIndex4.png" height="140px;" width="100%">
+		        </div>
+		        <div id="UImCentreDivImageStylr1" style="cursor: pointer;position: relative;z-index: 200" class="UImCentreDivImageStylr" onclick="indexFootLoad(this)" rel="analysis">
+		        <div style="height: 140px;width: 99%;z-index: 101;position: absolute;background: white;" class="indexShowdiv">
+		           <img style="margin-left: 8%;" alt="全市印章数据分析图" src="css/images/showIndex4.jpg" height="140px;" width="80%">
+		        </div>
+                <div style="height: 140px;width: 100%;z-index: 100;position: absolute;background: black;opacity:0;" class="indexShowdiv">
+		           <p style="font-size: 14px;color: white;width: 80%;margin: 30px auto;text-align: center;">全市概览和地区分析</p>
+		        </div>
+		        </div>
+		      </div>
+		      <div class="UICentreDivLogon">
+		       <div id="info-searchDiv" style="display: block;">
+		        <div style="width: 100%;height: 40px;margin-top: -40px">
+		         <p class="UICentreDivLogonWZ">登录窗口</p>
+		        </div>
+		        <div style="width: 100%;height: 140px;">
+		           <div class="UIlogonBtuYzdw" onclick="loginYdIndex(this)" rel="1" id="loginYdYZIndex">
+	                  <p>用章单位</p>
+	               </div> 
+		           <div class="UIlogonBtuZzdw" onclick="loginYdIndex(this)" rel="2" id="loginYdZZIndex">
+	                  <p>刻章单位</p>
+	               </div> 
+		           <div class="UIlogonBtuGldw" onclick="loginYdIndex(this)" rel="3" id="loginYdGLIndex">
+	                  <p>管理部门</p>
+	               </div> 
+		           <div class="UIlogonBtuGldw" onclick="loginYdIndex(this)" rel="9" id="loginYdGLIndex">
+	                  <p>行政中心</p>
+	               </div> 
+		           <div class="UIlogonBtuGetmm" onclick="showgetUserBydwxx()">
+	                  <p>找回密码</p>
+	               </div> 
+		        </div>
+		      </div>
+		      </div>
+		    </div>
+		<!-- 中间显示图片跟登录窗口结束 -->
+		
+		<!-- 中间显示文字开始 -->
+		<div class="UICentreFontDiv">
+		    <div class="fontCenter">
+		      <p class="UIfontStyle1">我要了解更多</p>
+		      <p class="UIfontStyle2">KNOW MORE</p>
+		      <p class="UIfontStyle3"></p>
+		    </div> 
+		</div>
+		<!-- 中间显示文字结束 -->
+		<!-- div脚部显示文字开始 -->
+		<div class="UIIndexFoot">
+		  
+		   <div class="UIIndexFootImage" onclick="indexFootLoad(this)" rel="indexXXquery">
+		      <div class="UIIndexFootImageDiv1">
+		      
+		      </div>
+		   </div>
+		   <div class="UIIndexFootImage" onclick="indexFootLoad(this)" rel="indexHdzq">
+		       <div class="UIIndexFootImageDiv2">
+		      
+		      </div>
+		   </div>
+		   <div class="UIIndexFootImage" onclick="indexFootLoad(this)" rel="indexGbgg">
+		       <div class="UIIndexFootImageDiv3">
+		      
+		      </div>
+		   </div>
+		   <div class="UIIndexFootImage" onclick="indexFootLoad(this)" rel="indexzcfg">
+		        <div class="UIIndexFootImageDiv4">
+		      
+		      </div>
+		   </div>
+		</div>
+		<!-- div脚部显示文字结束 -->
+		<div class="container" style="margin-top: 200px;display: none">
+		<div class="row">
+			<div class="span10" style="height: 500px">
+				<img src="css/images/indexs2.jpg" style="height: 570px; width: 780px">
+			</div>
+			<div class="span3" style="height: 500px;border: 1px solid red;">
+
+					<div id="info-searchDiv" style="display: block;">
+
+					<div class="title-bar blue" style="border-color: #114ec9; color: #000;margin-top: 10px;">
+						<i class="ico ico-search"></i>
+					</div>
+				<button onclick="loginYdIndex(this)" rel="1" id="loginYdYZIndex" class="btn btn-large btn-primary btn-block" style="display:block;">用章单位</button>
+				<button onclick="loginYdIndex(this)" rel="2" id="loginYdZZIndex" class="btn btn-large btn-primary btn-block" style="margin-top: 15px;display:block;">刻章单位</button>
+				<button onclick="loginYdIndex(this)" rel="3" id="loginYdGLIndex" class="btn btn-large btn-primary btn-block" style="margin-top: 15px;display:block;">管理部门</button>
+				<button onclick="loginYdIndex(this)" rel="5" id="loginYdWZGLIndex" class="btn btn-large btn-primary btn-block" style="margin-top: 15px;display: none;">网站管理</button>
+				<button rel="6" id="loginFqyzcIndex" class="btn btn-large btn-primary btn-block" style="margin-top: 15px;display: none;">非企业注册</button>
+				<!-- 右侧查询栏结束 -->
+				</div>
+			</div>
+		</div>
+	</div>
+<!-- </body> -->
+ <script type="text/javascript"> 
+ $(function(){
+		// debugger;
+			var userInfo=eval('(' +sessionStorage.getItem("userInfo")+ ')');
+			//console.log(JSON.stringify(userInfo));
+			if(userInfo==null || userInfo=='' || sessionStorage.getItem("sessionId") == ""){
+				$('#loginFqyzcIndex').css("display","none");
+			}else{
+				var yhlxNum=" 12345678";
+				 if(false==yhlxNum.indexOf(userInfo.yhlx)>0){
+					 $('#UiIndexHeardMenu').css("display",'none');
+						$('#UiIndexHeardFont').css("display",'');
+						$('#loginFqyzcIndex').css("display",'none');
+						$('#loginOutDiv').css("display",'none');
+						$("#mainnav").css("display","none");
+						$("#Main_Regist").css("display","");
+						var actives=$("#mainnav").children("a");
+					  	 for(var i=0;i<actives.length;i++){
+						  if($(actives[i]).attr("class")){
+							  $(actives[i]).removeClass("active");
+						    }
+					     }
+					  	sessionStorage.setItem("sessionId", "");
+						sessionStorage.setItem("yzdwcnsflag", "no");
+						//$("#htmlinform").load("index");
+				 }else{
+						$('#UiIndexHeardMenu').css("display",'');
+			    		$('#UiIndexHeardFont').css("display",'none');
+					/*  var str=" 23567";
+					 if(str.indexOf(userInfo.yhlx) > 0){
+						 $("#Main_Regist").css("display","");
+						//非企业注册
+				  		$('#loginFqyzcIndex').css("display","");
+				  		 $("#MainGlbmYw").css("display","");
+					}else{
+						 $("#Main_Regist").css("display","none");
+						//非企业注册
+				  		$('#loginFqyzcIndex').css("display","none");
+				  		$("#MainGlbmYw").css("display","none");
+					 }  */
+					if(userInfo.yhlx == "3"){
+			   			 $("#MainGlbmYw").css("display","");
+			   			 $('#loginYdYZIndex').css("display",'');
+			        		$('#loginYdZZIndex').css("display",'');
+			        		$('#loginYdGLIndex').css("display",'');
+			        		$('#loginYdWZGLIndex').css("display",'');
+			        		$('#loginFqyzcIndex').css("display",'');
+			        		$('#wzglBut').css("display",'');
+			   		}else{
+			   			$("#MainGlbmYw").css("display","none");
+			   			//隐藏多余按钮
+			       		$('#loginYdYZIndex').css("display",'none');
+			       		$('#loginYdZZIndex').css("display",'none');
+			       		$('#loginYdGLIndex').css("display",'none');
+			       		$('#loginYdWZGLIndex').css("display",'none');
+			       		$('#loginFqyzcIndex').css("display",'none');
+			       		$('#info-searchDiv').css("display",'none');
+			       		$('#wzglBut').css("display",'none');
+			   		} 
+					 
+					if(userInfo.yhlx == "8" || userInfo.yhlx == "4"){
+						 var yzdwcnsflag=sessionStorage.getItem("yzdwcnsflag");
+						if('yes'==yzdwcnsflag){
+							
+						}else{
+							//$('#yzdwcnsModal').modal({
+							//	   backdrop: 'static',//点击空白处不关闭对话框
+							//       keyboard: false,//键盘关闭对话框
+							//       show:true//弹出对话框
+							//});
+						}
+						
+					} 
+					 
+					//如果是第一次民警登录的话，需要强制修改密码
+				/* 	var yhlxIndex=" 567";
+					if(userInfo.yhlx == "5" || userInfo.yhlx == "6" || userInfo.yhlx == "7"){
+			     		if(checkValIsNull(userInfo.lastlogintime)){
+			     			$('#MainXgmmDiv').modal({
+			     			   backdrop: 'static',//点击空白处不关闭对话框
+			     		       keyboard: false,//键盘关闭对话框
+			     		       show:true//弹出对话框
+			     			});
+			     		}
+					} */
+					 
+					var loginMsg = sessionStorage.getItem("loginMsg");
+					// $("#htmlinform").load("CompanyCyryxxUpd");
+						if(loginMsg != ""){
+							 if(userInfo.ismodify == "2" && userInfo.cyryid != null){//超过7天未补全信息，跳至修改页面
+								 $('#loginOutDiv').css("display",'none');
+					    			$("#mainnav").css("display",'none');
+					        		$('#indexnav').addClass("active"); 
+								
+					        	 $("#htmlinform").load("CompanyCyryxxUpd");
+								 toastr.warning("信息已超过7天期限，请补全信息才可登录！");
+							 
+							        
+								 return;
+							 }else if(userInfo.ismodify == "0" && userInfo.cyryid != null){
+								 sessionStorage.setItem("loginMsg","");
+									Ewin.confirm({
+										message : "登录成功，7天内请补全信息！",
+									}).on(
+											function(e) {
+												if (!e) {
+													return;
+												}
+												 $("#htmlinform").load("CompanyCyryxxUpd");
+											});
+								 
+								 return;
+							 }else{
+								 sessionStorage.setItem("loginMsg","");
+							 }
+							 
+						} 
+				 }
+
+			
+			
+			} 
+			
+			//提示登录错误的信息
+			var loginMsgEroor = sessionStorage.getItem("loginMsgEroor");
+			if(!checkValIsNull(loginMsgEroor)){
+				 toastr.warning(loginMsgEroor);
+			}
+			
+	 });
+ 
+ function bszn(){
+	 $("#htmlinform").load("Bszn.html");
+ }
+ 
+ 
+//加载核心
+	function LoadRecogKenal(){
+	   if(!objIDCard.IsLoaded()){
+	       //var strDllPath = "";
+	       var nRet = objIDCard.Init();
+
+	       if(nRet==0x90)
+	       { 
+	          toastr.success("二代证核心加载成功");
+	          return;
+	       }
+	       else
+	       {
+	         toastr.warning("二代证核心加载失败\r\n返回值："+nRet);
+	         return;
+	       }
+	    }
+	    else{
+	          toastr.success("核心已经加载");
+	    }
+	 
+	}
+	//释放核心
+	function FreeRecogKenal(){
+	    objIDCard.Free();
+	}
+	//识别
+	function RecognizeImg(){
+		LoadRecogKenal();
+	    var strResult = ""; 
+		if(objIDCard.IsLoaded){
+		 if (!objIDCard.IsCardRead()) { 
+			   var imagePath ="c:\\test.bmp";
+			   var nRet = objIDCard.Read(imagePath);
+			 	 
+		       if(nRet==0x90){
+			    	$('#lqrxm').val(objIDCard.GetName());	
+			    	$('#lqrzjhm').val(objIDCard.GetIDCode());
+			    	
+			    	//alert($("#lqrxb").find("option[text='"+objIDCard.GetSex()+"']").val());
+			    	//$("#lqrxb").find("option[text='"+objIDCard.GetSex()+"']").attr("selected","selected");
+			    	//$("#lqrmz").find("option[text='"+objIDCard.GetPeople()+"']").attr("selected","selected");
+			    	$("#lqrxb option").each(function(){
+					   if($(this).text() === objIDCard.GetSex()){
+					      $(this).attr('selected', 'selected');
+					   }
+					});
+			    	
+			    	$("#lqrmz option").each(function(){
+					   if($(this).text() === objIDCard.GetPeople()){
+					      $(this).attr('selected', 'selected');
+					   }
+					});
+			    	//$('#lqrxb').val(objIDCard.GetSex());	
+			    	//$('#lqrmz').val(objIDCard.GetPeople());	
+			    	$('#lqrcsrq').val(objIDCard.GetBirthDay());	
+			    	$('#lqrdz').val(objIDCard.GetAddress());
+			    	var imgBase64 = "data:image/png;base64,"+objIDCard.EncodeToBase64(imagePath);
+			    	//alert(imgBase64);
+			    	$('#lqrzjzp').attr("src",imgBase64);
+			   }else{
+					strResult="识别失败!\r\n返回值：";
+			        strResult+=nRet;
+			        toastr.warning(strResult);  
+			        return;
+				}
+				
+		  }else{
+			 strResult="此卡已读取过！请放下一张...";
+			 toastr.warning(strResult);    
+			 return;
+		  }
+		}else{
+		    strResult="核心未加载，请加载核心...";
+		    toastr.warning(strResult);   
+		    return;
+		}
+		toastr.success(strResult);
+		FreeRecogKenal();
+	}	
+function showScan(){
+	var x = document.getElementById("x");
+	x.clear();
+	x.Start("");
+	$('#scanModal').modal('show');
+}
+
+$('#loginModal').on('hide.bs.modal', function () {
+	$('#yzdwcnsflag').val('no');
+});
+
+$(function() {
+	
+	Validator_getyhmmmForm();
+    $('#getyhmmmDiv').on('hide.bs.modal',
+    function() {
+    	$('#main_getdwmc').val('');
+   		$('#main_shxytybm').val('');
+   		$('#main_fddbrxm').val('');
+   		$('#main_fddbrzjhm').val('');
+   		$('#main_fddbrlxdh').val('');
+   		$('#main_jsdxsjhm').val('');
+   		$('#main_jsdxsjhm_one').val('');
+   		
+   		$("#MaingetyhmmmForm").data('bootstrapValidator').destroy();
+		$('#MaingetyhmmmForm').data('bootstrapValidator',null);
+		Validator_getyhmmmForm();
+    })
+});
+function Validator_getyhmmmForm(){
+	
+	$('#MaingetyhmmmForm').bootstrapValidator({
+		message: 'This value is not valid',
+		feedbackIcons: {/*输入框不同状态，显示图片的样式*/
+			valid: 'glyphicon glyphicon-ok',
+			invalid: 'glyphicon glyphicon-remove',
+			validating: 'glyphicon glyphicon-refresh'
+		},
+		fields: {/*验证*/
+			jsdxsjhm:{
+				validators: {
+					/**/
+					notEmpty: {
+						message: '接收的手机号码不能为空'
+					},
+					 regexp: {//匹配规则
+						 regexp: /^[1][3,4,5,7,8][0-9]{9}$/,
+						 message: '请输入有效的手机号码'
+					 }
+				}
+			},
+			qrjssjhm:{
+				validators: {
+					/**/
+					notEmpty: {
+						message: '确认接收的手机号码不能为空'
+					},
+					identical: {//相同
+						field: 'jsdxsjhm',
+						message: '两次手机号码不一致'
+					},
+					 regexp: {//匹配规则
+						 regexp: /^[1][3,4,5,7,8][0-9]{9}$/,
+						 message: '请输入有效的手机号码'
+					 }
+					
+				}
+			},
+		}
+	});
+}
+
+var xin = true,
+yin = true;
+var step = 1;
+var delay = 20;
+var $obj;
+var time=null;
+$(function() {
+	clearInterval(time);
+	time=null;	
+	getGbggIndex();
+    $obj = $("#imgDiv");
+     time = window.setInterval("move()", delay);
+    $obj.mouseover(function() {
+        clearInterval(time)
+    });
+    $obj.mouseout(function() {
+        time = window.setInterval("move()", delay)
+    });
+});
+
+
+
+function move() {
+    var left = $obj.offset().left;
+    var top = $obj.offset().top;
+   // var L = T = 0; //左边界和顶部边界
+    var L=0;
+    var T=380;
+    var R = $("#showTopicWindow").width() - $obj.width(); // 右边界
+    var B = $("#showTopicWindow").height() - $obj.height()+380; //下边界
+ 
+    //难点:怎样判断广告的4个边框有没有超出可视化范围!
+    if (left < L) {
+        xin = true; // 水平向右移动
+    }
+    if (left > R) {
+        xin = false;
+    }
+    if (top < T) {
+        yin = true;
+    }
+    if (top > B) {
+        yin = false;
+    }
+    //根据有没有超出范围来确定广告的移动方向
+    left += step * (xin == true ? 1 : -1);
+    top  += step * (yin == true ? 1 : -1);
+    // 给div 元素重新定位
+    $obj.offset({
+        top: top,
+        left: left
+    })
+}
+/**
+ * 获取最新一条公布公告
+ */
+function getGbggIndex(){
+	var data=new Object();
+	  data.pageSize=1;
+      data.pageNumber=0;
+	$.ajax({
+        url: 'GetNoticeList',
+        type: 'POST',
+        data: JSON.stringify(data),
+        contentType: 'application/json',
+        success: function (data) {
+        	if(data.succeed){
+        		$('#indexgbggContext').html(data.result.rows[0].title);
+         			      
+        	}else{
+        		//toastr.error(data.result,"提示");
+        	}
+        },    
+        beforeSend: function(xhr) {
+ 	        xhr.setRequestHeader('x-phone-userid', sessionStorage.getItem("sessionId"));
+ 	    },
+       dataType:"json",
+    });
+}
+ </script>
+<!--</html> --></div>
+	
+<!-- 登录model -->
+	<div class="modal fade" id="loginModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+		<div class="modal-dialog " role="document" style="width: 30%">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">×</span>
+					</button>
+					<h4 class="modal-title" id="myModalLabel">登录</h4>
+				</div>
+				<div class="modal-body">
+					<div id="loginInfoDivs" style="display: none;">
+						<form method="" target="_blank" class="form-horizontal" action="" id="loginForm">
+						<div class="form-group" style="margin-top: 15px">
+							<label class="control-label col-sm-3" for="txt_search_departmentname">用户名:</label>
+							<div class="col-sm-7">
+								<input type="text" class="form-control" id="loginYhm" placeholder="请输入用户名">
+							</div>
+
+						</div>
+						<div class="form-group" style="margin-top: 15px">
+							<label class="control-label col-sm-3" for="txt_search_departmentname">密码:</label>
+							<div class="col-sm-7">
+								<input type="password" class="form-control" id="loginDlmm" placeholder="请输入密码">
+							</div>
+
+						</div>
+						
+						<!-- 民警登录 需要验证身份证和手机号 -->
+						
+						<div class="form-group" style="margin-top: 15px;display: none;" id="login_sfzDiv">
+							<label class="control-label col-sm-3" for="txt_search_departmentname">身份证号:</label>
+							<div class="col-sm-7">
+								<input type="text" class="form-control" id="loginSfz" placeholder="请输入身份证号">
+							</div>
+
+						</div>
+						
+						<div class="form-group" style="margin-top: 15px;display: none;" id="login_sjhDiv">
+							<label class="control-label col-sm-3" for="txt_search_departmentname">手机号:</label>
+							<div class="col-sm-7">
+								<input type="text" class="form-control" id="loginSjh" placeholder="请输入手机号">
+							</div>
+
+						</div>
+						
+					</form>
+					</div>
+					
+
+				</div>
+				<div class="modal-footer">
+					
+					<button type="button" onclick="yzdw_fryzt_login();" id="yzdwLogin" style="display: none;" class="btn btn-primary">法人一证通登录</button>
+					<button type="button" onclick="no_yzdw_fryzt_login();" id="NoyzdwLogin" style="display: none;" class="btn btn-primary">法人一证通登录</button>
+					<button type="button" onclick="zzdw_fryzt_login();" id="zzdwLogin" style="display: none;" class="btn btn-primary">法人一证通登录</button>
+					 <!-- <button type="button" onclick="zzdw_sfz_login();" id="zzdwLogin_sfz" style="display: none;" class="btn btn-primary">身份证登录</button>
+					<button type="button" onclick="glbm_sfz_login();" id="glbmLogin_sfz" style="display: none;" class="btn btn-primary">身份证登录</button>  -->
+					<button type="button" id="notUnitRegisterDiv" class="btn btn-primary">注册</button>
+					<button type="button" id="loginYm" style="display: none;" class="btn btn-primary">登录</button>
+					<button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+	<!-- 登录引导model -->
+<!-- 	<div class="modal fade" id="loginYDModal" tabindex="-1" role="dialog"
+		aria-labelledby="myModalLabel">
+		<div class="modal-dialog " role="document" style="width: 30%">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal"
+						aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+					<h4 class="modal-title" id="myModalLabel">请选择您的登录类型</h4>
+				</div>
+				<div class="modal-body">
+
+						<div class="form-group" style="margin-top: 15px;text-align:center;">
+                    <button type="button" onclick="loginYd(this)" rel="1" id="loginYdYZ" class="btn btn-primary" >用章单位</button>
+					<button type="button" onclick="loginYd(this)" rel="2" id="loginYdZZ" class="btn btn-primary">刻章单位</button>
+					<button type="button" onclick="loginYd(this)" rel="3" id="loginYdGL" class="btn btn-primary">管理部门</button>
+					<button type="button"  id="loginYdBSZN" class="btn btn-primary">办事指南</button>
+					<button type="button" onclick="loginYd(this)" rel="3" id="loginYdWZGL" class="btn btn-primary">网站管理</button>
+					<input type="hidden" id="loginYdlx">
+						</div>
+
+				<div class="modal-footer">
+					
+				</div>
+			</div>
+		</div>
+	</div>
+</div> -->
+<!-- 注册引导model -->
+ 	<div class="modal fade" id="RegisterModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+		<div class="modal-dialog " role="document" style="width: 30%">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">×</span>
+					</button>
+					<h4 class="modal-title" id="myModalLabel">请选择您的注册类型</h4>
+				</div>
+				<div class="modal-body">
+
+						<div class="form-group" style="margin-top: 15px;text-align:center;">
+                    <button type="button" id="RegisterDiv" class="btn btn-primary">企业注册</button>
+					<button type="button" id="notUnitRegisterDiv" class="btn btn-primary">非企业注册</button>
+
+				<div class="modal-footer">
+					
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+</div>
+
+<!-- 用章单位登录引导model -->
+	<div class="modal fade" id="LoginTypeModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+		<div class="modal-dialog " role="document" style="width: 30%">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">×</span>
+					</button>
+					<h4 class="modal-title" id="myModalLabel">请选择您的登录类型</h4>
+				</div>
+				<div class="modal-body">
+
+						<div class="form-group" style="margin-top: 15px;text-align:center;">
+                    <button type="button" id="UnitLoginBut" class="btn btn-primary">企业用户</button>
+					<button type="button" id="NoUnitLoginBut" class="btn btn-primary">非企业用户</button>
+
+				<div class="modal-footer">
+					
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+</div>
+
+
+<form id="loginCyryForm">
+	<input type="hidden" id="sfzh">
+	<input type="hidden" id="loginType">
+	<input type="hidden" id="loginYhlx">
+	<input type="hidden" id="zzdwbm">
+	<div style="display: none;">
+		<div class="panel-body">
+	       	<div class="form-group col-sm-3">
+	       	<input type="hidden" name="cyryzjzp2" id="zjimage">
+				<img src="css/images/zjz.jpg" id="cyryzjzp" width="153px" height="189px;" border="2">
+			</div>
+			<div class="form-group  col-sm-3">
+			<input type="hidden" name="cyryxczp" id="xcimage">
+					<img src="css/images/xcz.jpg" id="cyryxczp" width="153px" height="189px;" border="2">
+			</div>
+		</div>
+	</div>
+</form>
+
+<!-- 修改密码model -->
+	<div class="modal fade" id="MainXgmmDiv" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+		<div class="modal-dialog " role="document" style="width: 30%">
+			<div class="modal-content">
+				<div class="modal-header">
+					<!-- <button type="button" class="close" data-dismiss="modal"
+						aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button> -->
+					<h4 class="modal-title" id="myModalLabel">民警用户第一次登录请修改密码后操作此系统！</h4>
+				</div>
+				<div class="modal-body">
+                         <form id="MainxgmmForm" class="form-horizontal bv-form" novalidate="novalidate"><button type="submit" class="bv-hidden-submit" style="display: none; width: 0px; height: 0px;"></button>
+                             	<div class="form-group has-feedback">
+									<label class="control-label col-sm-4" for="txt_search_departmentname">旧密码:
+										</label>
+									<div class="col-sm-5">
+										<input type="password" class="form-control" name="Main_xgOldmm" id="MaininputOldmm" placeholder="请输入旧密码" data-bv-field="Main_xgOldmm"><i class="form-control-feedback" data-bv-icon-for="Main_xgOldmm" style="display: none;"></i>
+									<small class="help-block" data-bv-validator="notEmpty" data-bv-for="Main_xgOldmm" data-bv-result="NOT_VALIDATED" style="display: none;">原始密码不能为空</small></div>
+								</div>
+                             	<div class="form-group has-feedback">
+									<label class="control-label col-sm-4" for="txt_search_departmentname">新密码:
+										</label>
+									<div class="col-sm-5">
+										<input type="password" class="form-control" name="Main_xgNewmm" id="MaininputNewmm" placeholder="请输入新密码" data-bv-field="Main_xgNewmm"><i class="form-control-feedback" data-bv-icon-for="Main_xgNewmm" style="display: none;"></i>
+									<small class="help-block" data-bv-validator="notEmpty" data-bv-for="Main_xgNewmm" data-bv-result="NOT_VALIDATED" style="display: none;">新密码不能为空</small><small class="help-block" data-bv-validator="stringLength" data-bv-for="Main_xgNewmm" data-bv-result="NOT_VALIDATED" style="display: none;">密码长度必须在8到18之间</small><small class="help-block" data-bv-validator="regexp" data-bv-for="Main_xgNewmm" data-bv-result="NOT_VALIDATED" style="display: none;">请用数字、大小写字母、特殊符合组合</small></div>
+								</div>
+                             	<div class="form-group has-feedback">
+									<label class="control-label col-sm-4" for="txt_search_departmentname">确认新密码:
+										</label>
+									<div class="col-sm-5">
+										<input type="password" class="form-control" name="Main_xgNewmmO" id="MaininputNewmmO" placeholder="请再次输入新密码" data-bv-field="Main_xgNewmmO"><i class="form-control-feedback" data-bv-icon-for="Main_xgNewmmO" style="display: none;"></i>
+									<small class="help-block" data-bv-validator="notEmpty" data-bv-for="Main_xgNewmmO" data-bv-result="NOT_VALIDATED" style="display: none;">确认密码不能为空</small><small class="help-block" data-bv-validator="identical" data-bv-for="Main_xgNewmmO" data-bv-result="NOT_VALIDATED" style="display: none;">两次密码不一致</small></div>
+								</div>
+                        </form>
+					<!-- 	<div style="float: right;margin-top: 30px">
+								<button type="button" id="" class="btn btn-primary "  >取消</button>
+							    <button type="button" id="MainBtuXgmm" class="btn btn-primary "  >确定</button>
+						</div> -->
+
+				<div class="modal-footer">
+							<button type="button" data-dismiss="modal" id="" class="btn btn-primary " onclick="coloseXgmmDiv()">取消</button>
+							<button type="button" id="MainBtuXgmm" class="btn btn-primary ">确定</button>
+						         
+				</div> 
+			</div>
+		</div>
+	</div>
+</div>
+<!-- 取回用户名跟密码model -->
+	<div class="modal fade" id="getyhmmmDiv" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+		<div class="modal-dialog " role="document" style="width: 40%">
+			<div class="modal-content">
+				<div class="modal-header">
+					<!-- <button type="button" class="close" data-dismiss="modal"
+						aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button> -->
+					<h4 class="modal-title" id="myModalLabel">用章单位取回账号密码</h4>
+				</div>
+				<div class="modal-body">
+                         <form id="MaingetyhmmmForm" class="form-horizontal bv-form" novalidate="novalidate"><button type="submit" class="bv-hidden-submit" style="display: none; width: 0px; height: 0px;"></button>
+                             	<div class="form-group">
+									<label class="control-label col-sm-4" for="txt_search_departmentname">单位名称:
+										</label>
+									<div class="col-sm-5">
+										<input type="text" class="form-control" name="yzdwmc" id="main_getdwmc" placeholder="请输入工商注册的单位名称">
+									</div>
+								</div>
+                             	<div class="form-group">
+									<label class="control-label col-sm-4" for="txt_search_departmentname">统一社会信用代码:
+										</label>
+									<div class="col-sm-5">
+										<input type="text" class="form-control" name="shxytybm" id="main_shxytybm" placeholder="请输入工商注册的统一社会信用代码">
+									</div>
+								</div>
+                             	<div class="form-group">
+									<label class="control-label col-sm-4" for="txt_search_departmentname">法人姓名:
+										</label>
+									<div class="col-sm-5">
+										<input type="text" class="form-control" name="fddbrxm" id="main_fddbrxm" placeholder="请输入工商注册的法人姓名">
+									</div>
+								</div>
+                             	<div class="form-group">
+									<label class="control-label col-sm-4" for="txt_search_departmentname">证件号码:
+										</label>
+									<div class="col-sm-5">
+										<input type="text" class="form-control" name="fddbrzjhm" id="main_fddbrzjhm" placeholder="请输入工商注册的证件号码">
+									</div>
+								</div>
+                             	<div class="form-group has-feedback">
+									<label class="control-label col-sm-4" for="txt_search_departmentname">接收短信的手机号码:
+										</label>
+									<div class="col-sm-5">
+										<input type="text" class="form-control" name="jsdxsjhm" id="main_jsdxsjhm_one" placeholder="请输入接收短信的手机号码" data-bv-field="jsdxsjhm"><i class="form-control-feedback" data-bv-icon-for="jsdxsjhm" style="display: none;"></i>
+									<small class="help-block" data-bv-validator="notEmpty" data-bv-for="jsdxsjhm" data-bv-result="NOT_VALIDATED" style="display: none;">接收的手机号码不能为空</small><small class="help-block" data-bv-validator="regexp" data-bv-for="jsdxsjhm" data-bv-result="NOT_VALIDATED" style="display: none;">请输入有效的手机号码</small></div>
+								</div>
+								   	<div class="form-group has-feedback">
+									<label class="control-label col-sm-4" for="txt_search_departmentname">确认接收短信的手机号码:
+										</label>
+									<div class="col-sm-5">
+										<input type="text" class="form-control" name="qrjssjhm" id="main_jsdxsjhm" placeholder="请再次输入接收短信的手机号码" data-bv-field="qrjssjhm"><i class="form-control-feedback" data-bv-icon-for="qrjssjhm" style="display: none;"></i>
+									<small class="help-block" data-bv-validator="notEmpty" data-bv-for="qrjssjhm" data-bv-result="NOT_VALIDATED" style="display: none;">确认接收的手机号码不能为空</small><small class="help-block" data-bv-validator="identical" data-bv-for="qrjssjhm" data-bv-result="NOT_VALIDATED" style="display: none;">两次手机号码不一致</small><small class="help-block" data-bv-validator="regexp" data-bv-for="qrjssjhm" data-bv-result="NOT_VALIDATED" style="display: none;">请输入有效的手机号码</small></div>
+								</div>
+								
+                        </form>
+
+				<div class="modal-footer">
+							<button type="button" data-dismiss="modal" id="" class="btn btn-primary ">取消</button>
+							<button type="button" onclick="getUserPassword()" class="btn btn-primary ">确定</button>
+						         
+				</div> 
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- 用户名跟密码model -->
+<div class="modal fade" id="showyhmmmDiv" tabindex="-1" role="dialog" aria-labelledby="">
+		<div class="modal-dialog " role="document" style="width: 25%;margin-top: 15%">
+			<div class="modal-content">
+				<div class="modal-body" style="height: 100px;padding: 10px 0 0 80px">
+                  <p style="font-size: 20px;font-weight: 600;margin-top: 30px"><span id="mymaindlzh" style="color: red">找回密码成功，请注意查收短信！</span></p>
+
+			    </div>
+		   </div>
+	</div>
+</div>
+
+<!-- 公安窗口 -->
+	<div class="modal fade" id="gackModal" abindex="-1" role="dialog" aria-labelledby="myModalLabel">
+		<div class="modal-dialog " role="document" style="width: 70%;max-height: 680px;overflow-y:hidden; ">
+		    <div style="position: absolute;top:4%;right:1.5%;z-index: 501">
+		        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true" style="color: black;font-size: 30px;">×</span>
+				</button>
+			</div>
+			<div class="modal-content" style="margin-top: 30px;z-index: 500">
+		
+		</div>
+	</div>
+   </div> 
+
+<!-- 刻章单位 -->
+	<div class="modal fade" id="kzdwNewModal" abindex="-1" role="dialog" aria-labelledby="myModalLabel">
+		<div class="modal-dialog " role="document" style="width: 70%;max-height: 680px;overflow-y:hidden; ">
+		    <div style="position: absolute;top:5%;right:0.5%;z-index: 501">
+		        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true" style="color: black;font-size: 30px;">×</span>
+				</button>
+			</div>
+			<div class="modal-content" style="margin-top: 30px;z-index: 500">
+		
+		</div>
+	</div>
+
+   </div>	
+
+<!-- 常见问题 -->
+	<div class="modal fade" id="cjwtNewModal" abindex="-1" role="dialog" aria-labelledby="myModalLabel">
+		<div class="modal-dialog " role="document" style="width: 70%;max-height: 100%;overflow-y:hidden; ">
+		    <div style="position: absolute;top:8%;right:0.5%;z-index: 501">
+		        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true" style="color: black;font-size: 30px;">×</span>
+				</button>
+			</div>
+			<div class="modal-content" style="margin-top: 30px;z-index: 500">
+		
+		</div>
+	</div>
+	</div>
+<!-- 常见问题手机版本 -->
+	<div class="modal fade" id="cjwtNewModal2" abindex="-1" role="dialog" aria-labelledby="myModalLabel">
+		<div class="modal-dialog " role="document" style="width: 100%;max-height: 100%;overflow-y:hidden; ">
+		    <div style="position: absolute;top:8%;right:0.5%;z-index: 601">
+		        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true" style="color: black;font-size: 30px;">×</span>
+				</button>
+			</div>
+			<div class="modal-content" style="margin-top: 30px;z-index: 600">
+		
+		</div>
+	</div>
+   </div>	
+
+<script type="text/javascript" src="js/bootstrap/bootstrapValidator.js"></script>
+
+   </div>
+
+	<!-- <div id="myAlert" class="alert alert-success" style="float: right;width: 20%;">
+		<a href="#" class="close" data-dismiss="alert">&times;</a> <strong>成功！</strong>结果是成功的。
+		
+		<div class="modal-dialog " role="document" style="width: 100%">
+			<div class="modal-content">
+				<div class="modal-header">
+					 <button type="button" class="close" data-dismiss="modal"
+						aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button> 
+					<h4 class="modal-title" id="myModalLabel">民警用户第一次登录请修改密码后操作此系统！</h4>
+				</div>
+				<div class="modal-body">
+                         <form id="MainxgmmForm" class="form-horizontal">
+                             	<div class="form-group" >
+									<label class="control-label col-sm-4"
+										for="txt_search_departmentname">旧密码:
+										</label>
+									<div class="col-sm-5">
+										<input type="password" class="form-control" name="Main_xgOldmm"
+											id="MaininputOldmm" placeholder="请输入旧密码">
+									</div>
+								</div>
+                             	<div class="form-group" >
+									<label class="control-label col-sm-4"
+										for="txt_search_departmentname">新密码:
+										</label>
+									<div class="col-sm-5">
+										<input type="password" class="form-control" name="Main_xgNewmm"
+											id="MaininputNewmm" placeholder="请输入新密码">
+									</div>
+								</div>
+                             	<div class="form-group" >
+									<label class="control-label col-sm-4"
+										for="txt_search_departmentname">确认新密码:
+										</label>
+									<div class="col-sm-5">
+										<input type="password" class="form-control" name="Main_xgNewmmO"
+											id="MaininputNewmmO" placeholder="请再次输入新密码">
+									</div>
+								</div>
+                        </form>
+						<div style="float: right;margin-top: 30px">
+								<button type="button" id="" class="btn btn-primary "  >取消</button>
+							    <button type="button" id="MainBtuXgmm" class="btn btn-primary "  >确定</button>
+						</div>
+
+				<div class="modal-footer">
+							<button type="button" data-dismiss="modal" id="" class="btn btn-primary " onclick="coloseXgmmDiv()" >取消</button>
+							<button type="button" id="MainBtuXgmm" class="btn btn-primary "  >确定</button>
+						         
+				</div> 
+			</div>
+		</div>
+	</div>
+
+		
+		
+		
+		
+		
+	</div> -->
+	<script type="text/javascript" src="js/bootstrap/bootstrapValidator.js"></script>
+
+<!-- 用章单位承诺书model -->
+	<div class="modal fade" id="yzdwcnsModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+		<div class="modal-dialog " role="document" style="width: 50%">
+			<div class="modal-content">
+				<div class="modal-header">
+					<!-- <button type="button" class="close" data-dismiss="modal"
+						aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button> -->
+					<h4 class="modal-title" id="myModalLabel">承诺书</h4>
+				</div>
+				<div class="modal-body">
+				<input type="hidden" id="yzdwcnsflag" value="no">
+				      <h3> <br>
+				      		<br>
+				      		<br>
+				      		<br>
+				      
+				      </h3> 
+				   <!-- <h5>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;一、勤奋学习，提升素质。要坚决落实集中学习制度，主动参加学习，业余时间自觉坚持读书看报，及时掌握国家方针政策，提高理论水平，提升工作能力。</h5>
+				    <h5>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;二、认真履责，服务大局。要主动服从服务大局需要和中心工作，认真履行职责，令行禁止，确保政令畅通，保证使办公室工作有条不絮。 </h5>
+				    <h5>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;三、牢记宗旨，文明服务。要牢记全心全意为人民服务的宗旨，以优秀党员的标准严格要求自己，积极践行科学发展观，主动、热情、文明服务，争做一名优秀的税务工作者。</h5> -->
+				</div>
+				<div class="modal-footer">
+					
+					<!-- <button type="button" class="btn btn-default" id="selectFalseCns" >取消</button> -->
+					<button type="button" class="btn  btn-primary" id="selectTrueCns" data-dismiss="modal">确定</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+<script>
+$(function(){
+	$('.left_navigation a').hover(function(){
+		$(this).animate({width:'52px'},300);	
+	},function(){
+	    $(this).animate({width:'40px'},300);	
+	});
+	
+	$('#selectFalseCns').click(function(){
+		$('#loginModal').modal('hide');
+		$('#yzdwcnsModal').modal('hide');
+		$('#yzdwcnsflag').val('no');
+		sessionStorage.setItem("yzdwcnsflag","no");//用于提示承诺书
+		LoginOut();
+	});
+	
+	$('#selectTrueCns').click(function(){
+		$('#yzdwcnsModal').modal('hide');
+		$('#yzdwcnsflag').val('yes');
+		
+		sessionStorage.setItem("yzdwcnsflag","yes");//用于提示承诺书
+		//getAuthorizeUrl("4");
+		
+		
+	});
+	
+	
+});
+
+</script>
+<script type="text/javascript">
+var mysetInterval=null;
+var mysetIntervalFlag=true;
+	$(function() {
+		//debugger;
+		var sessionId = sessionStorage.getItem("sessionId");
+		if(sessionId==null || sessionId==''){
+			$('#loginOutDiv').css("display",'none');
+			$("#mainnav").css("display","none");
+			mysetIntervalFlag=false;
+		}else{
+			//消息小窗口显示
+			 if(!mysetIntervalFlag){
+				clearInterval(mysetInterval);
+			}else{
+			mysetInterval=setInterval(function() {ShowMsginfo();}, 600000);
+			} 
+			$('#loginOutDiv').css("display",'');
+			$("#mainnav").css("display","");
+		} 
+		
+		$("#msgBut").popover();
+	});	
+	
+	
+	
+	
+	//身份证登录（刻章单位）
+	function zzdw_sfz_login(){
+		$('#loginCyryForm #loginType').val("1");
+		$('#loginCyryForm #loginYhlx').val("1");
+		
+		/* var data=new Object();
+		data.dlzh="431226199602182419";
+		data.loginType="1";
+		data.yhlx="1";
+		loginMain(data);  */
+		Connect();//调用身份证读取 
+	}
+	//身份证登录（管理部门）
+	function glbm_sfz_login(){
+		$('#loginCyryForm #loginType').val("2");
+		$('#loginCyryForm #loginYhlx').val("");
+	/* 	var data=new Object();
+		data.dlzh="tcj002";
+		data.loginType="2";
+		loginMain(data);  */
+		Connect();//调用身份证读取
+	}
+	
+	
+	
+	//刻章单位法人一证通登录
+	function zzdw_fryzt_login(){
+		//window.location.href="https://202.96.220.147/oauth2.0/oauth/authorize?response_type=code&scope=read&client_id=GA_412&redirect_uri=https://gaj.sh.gov.cn/yzxt/AyzxtizeLogin&state=1";	
+		//window.location.href="AuthorizeLogin?state=1";
+		getAuthorizeUrl("1");
+	}
+	//用章单位法人一证通登录
+	function yzdw_fryzt_login(){
+		//window.location.href="https://202.96.220.147/oauth2.0/oauth/authorize?response_type=code&scope=read&client_id=GA_412&redirect_uri=https://gaj.sh.gov.cn/yzxt/AuthorizeLogin&state=4";
+		//window.location.href="AuthorizeLogin?state=4";
+		getAuthorizeUrl("4");
+	 	/*  var yzdwcnsflag=$('#yzdwcnsflag').val();
+		if('yes'==yzdwcnsflag){
+			getAuthorizeUrl("4");
+			//window.location.href="AuthorizeLogin?state=4";
+		}else{
+			$('#yzdwcnsModal').modal({
+				   backdrop: 'static',//点击空白处不关闭对话框
+			       keyboard: false,//键盘关闭对话框
+			       show:true//弹出对话框
+			});
+		}    */
+
+	}
+	//非企业单位法人一证通登录
+	function no_yzdw_fryzt_login(){
+		//window.location.href="https://202.96.220.147/oauth2.0/oauth/authorize?response_type=code&scope=read&client_id=GA_412&redirect_uri=https://gaj.sh.gov.cn/yzxt/AuthorizeLogin&state=8";
+		//window.location.href="AuthorizeLogin?state=8"; 
+		getAuthorizeUrl("8");
+	}
+	
+	
+	function getAuthorizeUrl(state){
+		//alert(state);
+		$.ajax({
+			 url: 'GetAuthorizeLoginUrl',
+	         type: 'POST',
+	         data:"state="+state+"&t="+Math.random(),
+	         dataType:'json',
+	         success: function (data) {
+				if(data.succeed){
+					//alert(data.result);
+					window.location.href=data.result;
+				}
+		
+			},
+			complete: function(XMLHttpRequest, textStatus){
+			},
+			error:function(){
+				
+			},
+		    beforeSend: function(xhr) {
+		        xhr.setRequestHeader('x-phone-userid', sessionStorage.getItem("sessionId"));
+		    }
+		});
+	}
+	
+	
+	
+	 function leftMenu(Obj){
+	        lx=Obj;
+			$("#htmlinform").empty();
+			var str=" indexywGggbBsznWzglywcxywtj";
+			var tabName=$(Obj).attr("rel");
+			$("#htmlinform").load(tabName+".html");
+			if(str.indexOf(tabName) > 0){
+				var actives=$("#mainnav").children("a");
+				for(var i=0;i<actives.length;i++){
+					if($(actives[i]).attr("class")){
+						$(actives[i]).removeClass("active");
+					}
+				}
+				$(Obj).addClass("active");
+			}
+	 }
+	
+	 function openGackModal(obj){
+		 var tabName=$(obj).attr("rel");
+		 $("#gackModal").modal({    
+			    remote: tabName    
+			});
+	 }
+	 function openKzdwModal(obj){
+		 var tabName=$(obj).attr("rel");
+		 $("#kzdwNewModal").modal({    
+			    remote: tabName    
+			});
+	 }
+	 function openCjwtModal(obj){
+		 var tabName=$(obj).attr("rel");
+		 $("#cjwtNewModal").modal({    
+			    remote: tabName    
+			});
+	 }
+	 function openCjwtModal2(obj){
+		 var tabName=$(obj).attr("rel");
+		 $("#cjwtNewModal2").modal({    
+			    remote: tabName    
+			});
+	 }
+	function LoginOut() {
+		/* var sessionId = sessionStorage.getItem("sessionId");
+		if(sessionId==null || sessionId==''){
+		} */
+		$('#UiIndexHeardMenu').css("display",'none');
+		$('#UiIndexHeardFont').css("display",'block');
+		$('#loginFqyzcIndex').css("display",'none');
+		$('#loginOutDiv').css("display",'none');
+		toastr.success("注销成功！");
+		$("#mainnav").css("display","none");
+		$("#Main_Regist").css("display","");
+		var actives=$("#mainnav").children("a");
+	  	 for(var i=0;i<actives.length;i++){
+		  if($(actives[i]).attr("class")){
+			  $(actives[i]).removeClass("active");
+		    }
+	     }
+		   
+			
+		setTimeout(function(){
+			sessionStorage.setItem("sessionId", "");
+			sessionStorage.setItem("yzdwcnsflag", "no");
+			sessionStorage.setItem("userInfo", "");
+			sessionStorage.setItem("yzdwInfo", "");
+			sessionStorage.setItem("zzdwInfo", "");
+			/* 	sessionStorage.setItem("userInfo","");
+			sessionStorage.setItem("operation_id","");
+    		sessionStorage.setItem("roles","");
+    		
+    		sessionStorage.setItem("yzdwInfo","");
+    		sessionStorage.setItem("zzdwInfo","");  */
+			//$("#htmlinform").empty();
+			$("#htmlinform").load("index");
+			//window.location.replace("/yzxt/");
+	            },200); 
+		
+	}
+	
+	$(function (){
+		$("#loginYmIndex").unbind('click').click(function (){
+			var sessionId = sessionStorage.getItem("sessionId");
+			if(sessionId==null || sessionId==''){
+				
+			var dataLogin=new Object();
+			var dlzh=$("#loginYhm").val();
+			var dlmm=$("#loginDlmm").val();
+			var sfz=$("#loginSfz").val();
+			var sjh=$("#loginSjh").val();
+			dataLogin.dlmm=dlmm;
+			dataLogin.dlzh=dlzh;
+		
+			
+			
+			//如果是管理部门登录的就要验证身份证和手机号
+			if(indexDllbid == "3"){
+				if(checkValIsNull(sfz)){
+					 toastr.warning("身份证不能为空！");
+					 $("#loginSfz").focus();
+					 return;
+				}
+				
+				if(checkValIsNull(sjh)){
+					 toastr.warning("手机号不能为空！");
+					 $("#loginSjh").focus();
+					 return;
+				}
+				dataLogin.sfz=sfz;
+				dataLogin.sjh=sjh;
+			}
+			
+			 $.ajax({
+	             url: 'getuserbyyhmAndmm',
+	             type: 'POST',
+	             data: JSON.stringify(dataLogin),
+	             contentType: 'application/json',
+	             success: function (data) {
+	            	// //console.log(JSON.stringify(data));
+	            	 if(data.succeed==false){
+	            		 loginMain(dataLogin);
+	            	 }else{
+	            		var selectYDlx=indexDllbid;//获取用户选择的引导类型
+	            		if("1"===selectYDlx){
+	            			var yhlx=data.result.yhlx;
+	            			if("4"===yhlx){
+	            				loginMain(dataLogin);
+	            				$("#mainnav").css("display","");
+	            				$("#Main_Regist").css("display","none");
+	            			}else{
+	            				toastr.error("您选择的登录类型不对！请确认");
+	            			}
+	            		}
+	            		if("2"===selectYDlx){
+	            			var yhlx=data.result.yhlx;
+	            			if("1"===yhlx){
+	            				loginMain(dataLogin);
+	            				$("#mainnav").css("display","");
+	            				$("#Main_Regist").css("display","none");
+	            			}else{
+	            				toastr.error("您选择的登录类型不对！请确认");
+	            			}
+	            		}
+	            		if("3"===selectYDlx){
+	            			var yhlx=data.result.yhlx;
+	            			var str=" 23567";
+	            			if(str.indexOf(yhlx) > 0){
+	            				loginMain(dataLogin);
+	            				$("#mainnav").css("display","");
+	            				 if("5"===selectYDlx){
+	            					 setTimeout(function(){
+	            						 $("#htmlinform").load("Wzgl");
+	            	    	            },100);
+	            					
+	            				}
+	            			}else{
+	            				toastr.error("您选择的登录类型不对！请确认");
+	            			}
+	            		}
+	            		
+	            		
+	            	 }
+	             },
+	             error: function (jqXHR, textStatus, errorThrown) {
+	                 alert('An error has occured!! :-(')
+	             },
+	             beforeSend: function(xhr) {
+	       	        xhr.setRequestHeader('x-phone-userid', sessionStorage.getItem("sessionId"));
+	       	    }
+	         })
+			}
+		});
+
+	});
+		
+	$(function () { 
+		var userInfo=eval('(' +sessionStorage.getItem("userInfo")+ ')');
+		////console.log(JSON.stringify(userInfo));
+		if(userInfo==null || userInfo==''){
+		}else{
+			
+			/* $("#user").html(userInfo.yhxm); */
+			 
+		 var str=" 23567";
+		 if(str.indexOf(userInfo.yhlx) > 0){
+			 $("#Main_Regist").css("display","");
+		 }else{
+			 $("#Main_Regist").css("display","none");
+		 }
+		 var dlzhstr=" zz";
+		 var yhlxstr=" 1";
+		 if(dlzhstr.indexOf(userInfo.dlzh.substring(2,0))>0&&yhlxstr.indexOf(userInfo.yhlx)>0){
+		    $("#mypopover").popover({
+			  trigger:"focus",    //如果设为focus 当按钮失去焦点提示层会消失，例如页面空白处单机提示层消失 
+		      placement:"bottom",
+		      html:true,
+		      content:'<div style="width:250px; height: 200px;background: #efefef;">'
+		      +'<div style="margin:0 auto;width: 86px;height: 86px;" ><img  alt="头像" src="css/images/user.png" ></div>'
+		      +'<div style="margin: 0 auto;width: 60px"><h4 ><b>欢迎您</b></h4></div ><div style="width: 100%;text-align:center">'
+		      +'<span  class="label label-info" >'+userInfo.yhxm+'</span></div></div>'
+		    });
+		 }else{
+		    $("#mypopover").popover({
+			  trigger:"focus",    //如果设为focus 当按钮失去焦点提示层会消失，例如页面空白处单机提示层消失
+		      placement:"bottom",
+		      html:true,
+		      content:'<div style="width:250px; height: 200px;background: #efefef;">'
+		      +'<div style="margin:0 auto;width: 86px;height: 86px;" ><img  alt="头像" src="css/images/user.png" ></div>'
+		      +'<div style="margin: 0 auto;width: 60px"><h4 ><b>欢迎您</b></h4></div ><div style="width: 100%;text-align:center">'
+		      +'<span  class="label label-info" >'+userInfo.yhxm+'</span></div>'
+		      +'<div id="xgdlmm"  style="position: relative;bottom: -15px;left: 20px">'
+		      +'<button onclick="xgdlmmModal()" class="btn btn-default "><span class="glyphicon  glyphicon-edit" aria-hidden="true"></span>修改密码</button></div></div>'
+		    });
+		 }
+		}
+		
+	});
+	
+	function getMsgCount(){
+	   var data=new Object();
+       data.pageNumber = 1;
+       data.pageSize = 5;
+		$.ajax({
+			 url: 'getOnReadMsg',
+	         type: 'POST',
+	         data: JSON.stringify(data),
+	         contentType: 'application/json',
+	         success: function (data) {
+				if(data.succeed){
+					if(data.result.total!=null||data.result.total!=""){
+						if(data.result.total > 0){
+							$("#msgBut").attr("class","btn btn-danger");
+						}
+							
+					$('#msgCount').html(data.result.total);
+					$("#msgBut").attr("data-content","您当前有"+data.result.total+"条未读信息！");
+					}
+				}
+		
+			},
+			complete: function(XMLHttpRequest, textStatus){
+			},
+			error:function(){
+				
+			},
+		    beforeSend: function(xhr) {
+		        xhr.setRequestHeader('x-phone-userid', sessionStorage.getItem("sessionId"));
+		    }
+		});
+	}
+	
+	function clearLoginInfo() {
+		var formlist = document.getElementById("loginForm").getElementsByTagName("input");
+		for ( var i = 0; i < formlist.length; i++) {
+			if ((formlist[i].type == "text") || (formlist[i].type == "hidden")) {
+				$(formlist[i]).val("");
+			}
+		}
+	}
+	
+	setInterval(function() {shake();}, 1000);
+	function shake() {
+		if($('#msgCount').html() >0 && $('#msgCount').html()!=null && $('#msgCount').html()!=''){
+			$('#msgBtn').addClass('shake-constant');
+		    setTimeout(function() {$('#msgBtn').removeClass('shake-constant');}, 360)
+		}else{
+			$('#msgBtn').addClass('shake shake-slow');
+		}
+		
+	}
+	
+	function coloseXgmmDiv(){
+		window.location.replace("/yzxt/");
+	}
+	
+//----------------------------------------小窗口显示信息--------------------------------
+
+
+	function ShowMsginfo(){
+		
+		var sessionId = sessionStorage.getItem("sessionId");
+		if(sessionId==null || sessionId==''){
+			
+		}else{
+			getMsgCount();
+			var data=new Object();
+			data.readed = "0";
+			$.ajax({
+				 url: 'getMsg',
+		         type: 'POST',
+		         data: JSON.stringify(data),
+		         contentType: 'application/json',
+		         success: function (data) {
+					console.log(JSON.stringify(data));
+					if(data.succeed){
+						/* for(var i=0;i<data.result.rows.length;i++){  
+							if(data.result.rows[i].readed == "0"){ 
+								
+								str+='<button id="tt" onclick="readMsg(\''+data.result.rows[i].id+'\')" style="float:right;margin-top: -6px;background:#56a8ef; " type="button" class="btn btn-primary ">已读</button>';
+							}
+							
+							html+='<div   style="margin: 10px 0px;  width: 1040px;" id="bsznxxtz" onload="starts()">'
+							          +'<div class="panel panel-default"><div class="panel-heading">消息通知'+str+'<span style="float:right;padding-right:24px;">'+formatTime(data.result.rows[i].createtime)+'</span></div><div class="panel-body">'
+							          +'<div class="panel-heading" id="msg">'+data.result.rows[i].msg+'</div></div></div></div>';
+							str="";
+						}  */
+						if(data.result.total != "" && data.result.total > 0){
+							YZmessage(data.result.rows[0].msg,formatTime(data.result.rows[0].createtime),data.result.rows[0].id);
+						}
+					}
+			
+				},
+				complete: function(XMLHttpRequest, textStatus){
+				},
+				error:function(){
+					
+				},
+			    beforeSend: function(xhr) {
+			        xhr.setRequestHeader('x-phone-userid', sessionStorage.getItem("sessionId"));
+			    }
+			});
+		}
+		
+		
+	}
+
+	
+	function formatTime(timeStr){
+		if(typeof(timeStr) != "undefined" && timeStr !=null){
+			timeStr = timeStr.substring(0, 4) + "-" + timeStr.substring(4, 6)
+			+ "-" + timeStr.substring(6, 8) + " "
+			+ timeStr.substring(8, 10) + ":"
+			+ timeStr.substring(10, 12) + ":"
+			+ timeStr.substring(12, 14);
+			return timeStr;
+		}
+	}
+	
+	
+</script>
+<script for="FaceCtrl" event="OnCaptureFaceImage()" language="javascript">
+//alert('6');
+    CaptureFaceImageEvent();
+</script>
+<script for="FaceCtrl" event="OnCaptureFaceState(nState)" language="javascript">
+//alert('7');
+	CaptureFaceStateEvent(nState);
+</script>
+<script for="CertCtl" event="OnGetIDCardInfo()" language="javascript">
+     OnGetIDCardInfo();
+</script>
+</body></html>
