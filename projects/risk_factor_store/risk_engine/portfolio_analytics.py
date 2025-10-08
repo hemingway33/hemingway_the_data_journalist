@@ -201,14 +201,18 @@ class PortfolioAnalyticsEngine:
         
         # Weighted average PD
         weighted_pd = sum(
-            entity_scores[eid]['pd'] * (pos['notional_amount'] / total_exposure)
-            for eid, pos in zip(positions['entity_id'], positions.itertuples())
+            entity_scores[eid]['pd'] * (row.notional_amount / total_exposure)
+            for eid, row in zip(
+                positions['entity_id'], positions.itertuples(index=False)
+            )
         )
-        
+
         # Weighted average LGD
         weighted_lgd = sum(
-            entity_scores[eid]['lgd'] * (pos['notional_amount'] / total_exposure)
-            for eid, pos in zip(positions['entity_id'], positions.itertuples())
+            entity_scores[eid]['lgd'] * (row.notional_amount / total_exposure)
+            for eid, row in zip(
+                positions['entity_id'], positions.itertuples(index=False)
+            )
         )
         
         # Portfolio expected loss
